@@ -14,7 +14,7 @@ require (
 	github.com/rafa-mori/logz v1.3.0
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.20.1
-	github.com/stretchr/testify v1.10.0
+	github.com/stretchr/testify v1.11.0
 	github.com/subosito/gotenv v1.6.0
 	github.com/zalando/go-keyring v0.2.6
 	golang.org/x/crypto v0.41.0
