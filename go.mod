@@ -4,7 +4,7 @@ go 1.25.1
 
 require (
 	//github.com/docker/docker v28.4.0+incompatible
-	github.com/docker/docker v28.4.0+incompatible
+	github.com/docker/docker v28.5.0+incompatible
 	github.com/docker/go-connections v0.6.0
 	github.com/fatih/color v1.18.0
 	github.com/goccy/go-json v0.10.5
