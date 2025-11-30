@@ -4,8 +4,7 @@ package gdbase
 import (
 	. "github.com/kubex-ecosystem/gdbase/internal/interfaces"
 	t "github.com/kubex-ecosystem/gdbase/internal/types"
-
-	l "github.com/kubex-ecosystem/logz"
+	"github.com/kubex-ecosystem/logz"
 )
 
 type PropertyValBase[T any] interface{ IPropertyValBase[T] }
@@ -18,13 +17,13 @@ func NewProperty[T any](name string, v *T, withMetrics bool, cb func(any) (bool,
 type Channel[T any] interface{ IChannelCtl[T] }
 type ChannelBase[T any] interface{ IChannelBase[T] }
 
-func NewChannel[T any](name string, logger l.Logger) IChannelCtl[T] {
+func NewChannel[T any](name string, logger *logz.LoggerZ) IChannelCtl[T] {
 	return t.NewChannelCtl[T](name, logger)
 }
-func NewChannelCtlWithProperty[T any, P IProperty[T]](name string, buffers *int, property P, withMetrics bool, logger l.Logger) IChannelCtl[T] {
+func NewChannelCtlWithProperty[T any, P IProperty[T]](name string, buffers *int, property P, withMetrics bool, logger *logz.LoggerZ) IChannelCtl[T] {
 	return t.NewChannelCtlWithProperty[T, P](name, buffers, property, withMetrics, logger)
 }
-func NewChannelBase[T any](name string, buffers int, logger l.Logger) IChannelBase[T] {
+func NewChannelBase[T any](name string, buffers int, logger *logz.LoggerZ) IChannelBase[T] {
 	return t.NewChannelBase[T](name, buffers, logger)
 }
 
@@ -48,7 +47,7 @@ func NewValidationResult(isValid bool, message string, metadata map[string]any, 
 
 type Environment interface{ IEnvironment }
 
-func NewEnvironment(envFile string, isConfidential bool, logger l.Logger) (IEnvironment, error) {
+func NewEnvironment(envFile string, isConfidential bool, logger *logz.LoggerZ) (IEnvironment, error) {
 	return t.NewEnvironment(envFile, isConfidential, logger)
 }
 
@@ -70,6 +69,6 @@ func NewReference(name string) IReference { return t.NewReference(name) }
 
 type SignalManager[T chan string] interface{ ISignalManager[T] }
 
-func NewSignalManager[T chan string](signalChan T, logger l.Logger) ISignalManager[T] {
+func NewSignalManager[T chan string](signalChan T, logger *logz.LoggerZ) ISignalManager[T] {
 	return t.NewSignalManager[T](signalChan, logger)
 }

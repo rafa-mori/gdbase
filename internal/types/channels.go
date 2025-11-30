@@ -5,8 +5,9 @@ import (
 
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
 	tu "github.com/kubex-ecosystem/gdbase/utils"
+	"github.com/kubex-ecosystem/logz"
 	l "github.com/kubex-ecosystem/logz"
-	gl "github.com/kubex-ecosystem/logz/logger"
+	gl "github.com/kubex-ecosystem/logz"
 
 	"reflect"
 
@@ -18,7 +19,7 @@ var (
 )
 
 type ChannelBase[T any] struct {
-	l.Logger              // Logger for this Channel instance
+	*logz.LoggerZ              // Logger for this Channel instance
 	*Mutexes              // Mutexes for this Channel instance
 	Name     string       // The name of the channel.
 	Channel  any          // The channel for the value. Main channel for this struct.
@@ -28,7 +29,7 @@ type ChannelBase[T any] struct {
 }
 
 // NewChannelBase creates a new ChannelBase instance with the provided name and type.
-func NewChannelBase[T any](name string, buffers int, logger l.Logger) ci.IChannelBase[any] {
+func NewChannelBase[T any](name string, buffers int, logger *logz.LoggerZ) ci.IChannelBase[any] {
 	if logger == nil {
 		logger = l.GetLogger("GoLife")
 	}
@@ -89,7 +90,7 @@ func (cb *ChannelBase[T]) Close() error {
 	cb.MuLock()
 	defer cb.MuUnlock()
 	if cb.Channel != nil {
-		gl.LogObjLogger(cb, "info", "Closing channel for:", cb.Name)
+		logz.Log("Closing channel for:", cb.Name)
 		close(cb.Channel.(chan T))
 	}
 	return nil
@@ -98,7 +99,7 @@ func (cb *ChannelBase[T]) Clear() error {
 	cb.MuLock()
 	defer cb.MuUnlock()
 	if cb.Channel != nil {
-		gl.LogObjLogger(cb, "info", "Clearing channel for:", cb.Name)
+		logz.Log("Clearing channel for:", cb.Name)
 		close(cb.Channel.(chan T))
 		cb.Channel = make(chan T, cb.Buffers)
 	}
@@ -110,7 +111,7 @@ type ChannelCtl[T any] struct {
 	//ci.IChannelCtl[T] // Channel interface for this Channel instance
 
 	// Logger is the Logger instance for this Channel instance.
-	Logger l.Logger // Logger for this Channel instance
+	Logger *logz.LoggerZ // Logger for this Channel instance
 
 	// IMutexes is the interface for the mutexes in this Channel instance.
 	*Mutexes // Mutexes for this Channel instance
@@ -136,7 +137,7 @@ type ChannelCtl[T any] struct {
 }
 
 // NewChannelCtl creates a new ChannelCtl instance with the provided name.
-func NewChannelCtl[T any](name string, logger l.Logger) ci.IChannelCtl[T] {
+func NewChannelCtl[T any](name string, logger *logz.LoggerZ) ci.IChannelCtl[T] {
 	if logger == nil {
 		logger = l.GetLogger("GoLife")
 	}
@@ -156,7 +157,7 @@ func NewChannelCtl[T any](name string, logger l.Logger) ci.IChannelCtl[T] {
 }
 
 // NewChannelCtlWithProperty creates a new ChannelCtl instance with the provided name and type.
-func NewChannelCtlWithProperty[T any, P ci.IProperty[T]](name string, buffers *int, property P, withMetrics bool, logger l.Logger) ci.IChannelCtl[T] {
+func NewChannelCtlWithProperty[T any, P ci.IProperty[T]](name string, buffers *int, property P, withMetrics bool, logger *logz.LoggerZ) ci.IChannelCtl[T] {
 	if logger == nil {
 		logger = l.GetLogger("GoLife")
 	}
@@ -228,7 +229,7 @@ func (cCtl *ChannelCtl[T]) SetSubChannels(channels map[string]interface{}) map[s
 }
 func (cCtl *ChannelCtl[T]) GetSubChannelByName(name string) (any, reflect.Type, bool) {
 	if cCtl.Channels == nil {
-		gl.LogObjLogger(cCtl, "info", "Creating channels map for:", cCtl.Name, "ID:", cCtl.ID.String())
+		logz.Log("info", "Creating channels map for:", cCtl.Name, "ID:" cCtl.ID.String())
 		cCtl.Channels = initChannelsMap(cCtl)
 	}
 	cCtl.MuRLock()
@@ -237,11 +238,11 @@ func (cCtl *ChannelCtl[T]) GetSubChannelByName(name string) (any, reflect.Type, 
 		if channel, ok := rawChannel.(ci.IChannelBase[T]); ok {
 			return channel, channel.GetType(), true
 		} else {
-			gl.LogObjLogger(cCtl, "error", fmt.Sprintf("Channel %s is not a valid channel type. Expected: %s, receive %s", name, reflect.TypeFor[ci.IChannelBase[T]]().String(), reflect.TypeOf(rawChannel)))
+			logz.Log("error", fmt.Sprintf("Channel %s is not a valid channel type. Expected: %s, receive %s", name, reflect.TypeFor[ci.IChannelBase[T]]().String() reflect.TypeOf(rawChannel)))
 			return nil, nil, false
 		}
 	}
-	gl.LogObjLogger(cCtl, "error", "Channel not found:", name, "ID:", cCtl.ID.String())
+	logz.Log("error", "Channel not found:", name, "ID:" cCtl.ID.String())
 	return nil, nil, false
 }
 func (cCtl *ChannelCtl[T]) SetSubChannelByName(name string, channel any) (any, error) {
@@ -406,23 +407,23 @@ func initChannelsMap[T any](v *ChannelCtl[T]) map[string]interface{} {
 	if v.Channels == nil {
 		v.MuLock()
 		defer v.MuUnlock()
-		gl.LogObjLogger(v, "info", "Creating channels map for:", v.Name, "ID:", v.ID.String())
+		logz.Log("ID:", v.ID.String())
 		v.Channels = make(map[string]interface{})
 		// done is a channel for the done signal.
-		v.Channels["done"] = NewChannelBase[bool]("done", smBuf, v.Logger)
+		v.Channels["done"] = NewChannelBase[bool]("done", smBuf, *logz.LoggerZ)
 		// ctl is a channel for the internal control channel.
-		v.Channels["ctl"] = NewChannelBase[string]("ctl", mdBuf, v.Logger)
+		v.Channels["ctl"] = NewChannelBase[string]("ctl", mdBuf, *logz.LoggerZ)
 		// condition is a channel for the condition signal.
-		v.Channels["condition"] = NewChannelBase[string]("cond", smBuf, v.Logger)
+		v.Channels["condition"] = NewChannelBase[string]("cond", smBuf, *logz.LoggerZ)
 
 		if v.withMetrics {
-			v.Channels["telemetry"] = NewChannelBase[string]("telemetry", mdBuf, v.Logger)
-			v.Channels["monitor"] = NewChannelBase[string]("monitor", mdBuf, v.Logger)
+			v.Channels["telemetry"] = NewChannelBase[string]("telemetry", mdBuf, *logz.LoggerZ)
+			v.Channels["monitor"] = NewChannelBase[string]("monitor", mdBuf, *logz.LoggerZ)
 		}
 	}
 	return v.Channels
 }
-func getDefaultChannelsMap(withMetrics bool, logger l.Logger) map[string]any {
+func getDefaultChannelsMap(withMetrics bool, logger *logz.LoggerZ) map[string]any {
 	mp := map[string]any{
 		// done is a channel for the done signal.
 		"done": NewChannelBase[bool]("done", smBuf, logger),

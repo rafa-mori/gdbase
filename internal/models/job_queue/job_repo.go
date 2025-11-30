@@ -7,7 +7,7 @@ import (
 	"time"
 
 	svc "github.com/kubex-ecosystem/gdbase/internal/services"
-	gl "github.com/kubex-ecosystem/logz/logger"
+	gl "github.com/kubex-ecosystem/logz"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"

@@ -11,8 +11,9 @@ import (
 	"github.com/google/uuid"
 
 	t "github.com/kubex-ecosystem/gdbase/internal/types"
+	"github.com/kubex-ecosystem/logz"
+	gl "github.com/kubex-ecosystem/logz"
 	l "github.com/kubex-ecosystem/logz"
-	gl "github.com/kubex-ecosystem/logz/logger"
 )
 
 type ICronJobValidation interface {
@@ -21,11 +22,11 @@ type ICronJobValidation interface {
 }
 type CronModelValidation struct {
 	*t.Mutexes
-	Logger        l.Logger
+	Logger        *logz.LoggerZ
 	defaultValues map[string]any
 }
 
-func NewCronModelValidation(ctx context.Context, logger l.Logger, debug bool) ICronJobValidation {
+func NewCronModelValidation(ctx context.Context, logger *logz.LoggerZ, debug bool) ICronJobValidation {
 	if logger == nil {
 		logger = l.GetLogger("CronModelValidation")
 	}
@@ -54,15 +55,15 @@ func NewCronModelValidation(ctx context.Context, logger l.Logger, debug bool) IC
 }
 func (cv *CronModelValidation) IsValidField(field any) bool {
 	if field == nil {
-		gl.LogObjLogger(cv, "warn", fmt.Sprintf("Field is nil: %v", field))
+		logz.Log("warn", fmt.Sprintf("Field is nil: %v", field))
 		return false
 	}
 	if reflect.TypeOf(field).Kind() == reflect.Ptr {
-		gl.LogObjLogger(cv, "warn", fmt.Sprintf("Field is a pointer: %v", field))
+		logz.Log("warn", fmt.Sprintf("Field is a pointer: %v", field))
 		return false
 	}
 	if vl := reflect.ValueOf(field); !vl.IsValid() || !vl.IsNil() || vl.IsZero() {
-		gl.LogObjLogger(cv, "warn", fmt.Sprintf("Field is not valid: %v", field))
+		logz.Log("warn", fmt.Sprintf("Field is not valid: %v", field))
 		return false
 	}
 	return true
@@ -70,7 +71,7 @@ func (cv *CronModelValidation) IsValidField(field any) bool {
 func (cv *CronModelValidation) GetValueOrDefault(ctx context.Context, name string, field any) any {
 	// If the field is not valid, search for a default value
 	if defaultValue, ok := cv.defaultValues[name]; ok {
-		gl.LogObjLogger(cv, "notice", fmt.Sprintf("Field %s is not valid, using default value: %v", name, defaultValue))
+		logz.Log("notice", fmt.Sprintf("Field %s is not valid, using default value: %v", name, defaultValue))
 		return defaultValue
 	}
 	// If no default value is found, return the original field
@@ -78,23 +79,23 @@ func (cv *CronModelValidation) GetValueOrDefault(ctx context.Context, name strin
 }
 func (cv *CronModelValidation) ValidateCronJobRestrict(field any) error {
 	if !cv.IsValidField(field) {
-		gl.LogObjLogger(cv, "warn", fmt.Sprintf("Field is not valid: %v", field))
+		logz.Log("warn", fmt.Sprintf("Field is not valid: %v", field))
 		return errors.New("field is not valid")
 	}
 	switch v := field.(type) {
 	case string:
 		if v == "" {
-			gl.LogObjLogger(cv, "warn", fmt.Sprintf("Field is empty: %v", field))
+			logz.Log("warn", fmt.Sprintf("Field is empty: %v", field))
 			return errors.New("field cannot be empty")
 		}
 	case int:
 		if v <= 0 {
-			gl.LogObjLogger(cv, "warn", fmt.Sprintf("Field is not positive: %v", field))
+			logz.Log("warn", fmt.Sprintf("Field is not positive: %v", field))
 			return errors.New("field must be positive")
 		}
 	case uuid.UUID:
 		if v == uuid.Nil {
-			gl.LogObjLogger(cv, "warn", fmt.Sprintf("Field is not a valid UUID: %v", field))
+			logz.Log("warn", fmt.Sprintf("Field is not a valid UUID: %v", field))
 			return errors.New("field must be a valid UUID")
 		}
 	}
@@ -103,7 +104,7 @@ func (cv *CronModelValidation) ValidateCronJobRestrict(field any) error {
 func (cv *CronModelValidation) ValidateCronJobProperties(ctx context.Context, cron *CronJob, restrict bool) (*CronJob, error) {
 	// Check if the cron job is nil
 	if cron == nil {
-		gl.LogObjLogger(cv, "error", "Cron job cannot be nil")
+		logz.Log("error", "Cron job cannot be nil")
 		return nil, errors.New("cron job cannot be nil")
 	}
 
@@ -123,7 +124,7 @@ func (cv *CronModelValidation) ValidateCronJobProperties(ctx context.Context, cr
 		if restrict {
 			err := cv.ValidateCronJobRestrict(value.Interface())
 			if err != nil {
-				gl.LogObjLogger(cv, "warn", fmt.Sprintf("Field is not valid: %v", value.Interface()))
+				logz.Log("warn", fmt.Sprintf("Field is not valid: %v", value.Interface()))
 				return nil, err
 			}
 		}
@@ -136,7 +137,7 @@ func (cv *CronModelValidation) ValidateCronJobProperties(ctx context.Context, cr
 	cv.MuLock()
 	defer cv.MuUnlock()
 
-	gl.LogObjLogger(cv, "info", fmt.Sprintf("Cron job properties validated: %v", cron))
+	logz.Log("info", fmt.Sprintf("Cron job properties validated: %v", cron))
 
 	// return the cron job with the validated and defaulted values
 	return cron, nil

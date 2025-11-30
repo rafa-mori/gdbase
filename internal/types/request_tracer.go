@@ -10,8 +10,8 @@ import (
 	"time"
 
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
-	l "github.com/kubex-ecosystem/logz"
-	gl "github.com/kubex-ecosystem/logz/logger"
+	"github.com/kubex-ecosystem/logz"
+	gl "github.com/kubex-ecosystem/logz"
 )
 
 var (
@@ -339,7 +339,7 @@ func updateRequestTracer(g ci.IGoBE, updatedTracer ci.IRequestsTracer) error {
 	}
 	return nil
 }
-func isDuplicateRequest(g ci.IGoBE, rt ci.IRequestsTracer, logger l.Logger) bool {
+func isDuplicateRequest(g ci.IGoBE, rt ci.IRequestsTracer, logger *logz.LoggerZ) bool {
 	env := g.Environment()
 	strategy := screeningByRAMSize(env, rt.GetFilePath())
 

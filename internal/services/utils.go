@@ -17,7 +17,7 @@ import (
 
 	"github.com/kubex-ecosystem/gdbase/internal/module/kbx"
 	u "github.com/kubex-ecosystem/gdbase/utils"
-	gl "github.com/kubex-ecosystem/logz/logger"
+	gl "github.com/kubex-ecosystem/logz"
 )
 
 func SlitMessage(recPayload []string) (id, msg []string) {

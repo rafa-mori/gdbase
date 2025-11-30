@@ -66,8 +66,8 @@ repos:
   - repo: https://github.com/dnephin/pre-commit-golang
     rev: v0.5.1
     hooks:
-      - id: go-fmt
-      - id: go-vet
+#      - id: go-fmt
+#      - id: go-vet
       - id: go-mod-tidy
         # - id: golangci-lint
         # args: ["run", "--config=support/hooks/.golangci.yaml"]

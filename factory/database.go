@@ -7,8 +7,7 @@ import (
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
 	svc "github.com/kubex-ecosystem/gdbase/internal/services"
 	it "github.com/kubex-ecosystem/gdbase/internal/types"
-
-	l "github.com/kubex-ecosystem/logz"
+	"github.com/kubex-ecosystem/logz"
 )
 
 var migrationFiles embed.FS
@@ -17,10 +16,10 @@ type DBService = svc.DBService
 type IDBService interface{ svc.DBService }
 type DBServiceImpl = svc.DBServiceImpl
 
-func NewDatabaseServiceImpl(ctx context.Context, config *DBConfigImpl, logger l.Logger) (*DBServiceImpl, error) {
+func NewDatabaseServiceImpl(ctx context.Context, config *DBConfigImpl, logger *logz.LoggerZ) (*DBServiceImpl, error) {
 	return svc.NewDatabaseServiceImpl(ctx, config, logger)
 }
-func NewDatabaseService(ctx context.Context, config *DBConfigImpl, logger l.Logger) (DBService, error) {
+func NewDatabaseService(ctx context.Context, config *DBConfigImpl, logger *logz.LoggerZ) (DBService, error) {
 	return svc.NewDatabaseService(ctx, config, logger)
 }
 
@@ -40,10 +39,10 @@ type IDBConfig interface {
 }
 type DBConfigImpl = svc.DBConfig
 
-func NewDBConfigWithArgs(ctx context.Context, dbName, dbConfigFilePath string, autoMigrate bool, logger l.Logger, debug bool) *DBConfigImpl {
+func NewDBConfigWithArgs(ctx context.Context, dbName, dbConfigFilePath string, autoMigrate bool, logger *logz.LoggerZ, debug bool) *DBConfigImpl {
 	return svc.NewDBConfigWithArgs(ctx, dbName, dbConfigFilePath, autoMigrate, logger, debug)
 }
-func NewDBConfigFromFile(ctx context.Context, dbConfigFilePath string, autoMigrate bool, logger l.Logger, debug bool) (*DBConfigImpl, error) {
+func NewDBConfigFromFile(ctx context.Context, dbConfigFilePath string, autoMigrate bool, logger *logz.LoggerZ, debug bool) (*DBConfigImpl, error) {
 	return svc.NewDBConfigFromFile(ctx, dbConfigFilePath, autoMigrate, logger, debug)
 }
 func SetupDatabaseServices(ctx context.Context, d svc.IDockerService, config *DBConfigImpl) error {
@@ -63,7 +62,7 @@ type Messagery = it.Messagery
 type Environment = ci.IEnvironment
 type EnvironmentType = it.Environment
 
-func NewEnvironment(configFile string, isConfidential bool, logger l.Logger) (*EnvironmentType, error) {
+func NewEnvironment(configFile string, isConfidential bool, logger *logz.LoggerZ) (*EnvironmentType, error) {
 	return it.NewEnvironmentType(configFile, isConfidential, logger)
 }
 

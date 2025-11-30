@@ -1,10 +1,10 @@
 package types
 
 import (
-	gl "github.com/kubex-ecosystem/logz/logger"
-
 	"sync"
 	"time"
+
+	"github.com/kubex-ecosystem/logz"
 )
 
 type IMutexes interface {
@@ -169,12 +169,12 @@ func (m *Mutexes) MuSignalCond() {
 	if m.muSharedCtxValidate != nil {
 		isValid, err := m.muSharedCtxValidate(m.muSharedCtx)
 		if err != nil || !isValid {
-			gl.LogObjLogger(m, "warn", "Condition signal aborted due to validation failure")
+			logz.Log("warn", "Condition signal aborted due to validation failure")
 			return
 		}
 	}
 
-	gl.LogObjLogger(m, "info", "Signaling condition variable")
+	logz.Log("info", "Signaling condition variable")
 	m.MuCtxCond.Signal()
 }
 

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	gl "github.com/kubex-ecosystem/logz/logger"
+	gl "github.com/kubex-ecosystem/logz"
 )
 
 type IWhatsAppService interface {

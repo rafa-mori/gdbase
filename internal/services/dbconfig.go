@@ -12,7 +12,8 @@ import (
 	"github.com/kubex-ecosystem/gdbase/internal/module/kbx"
 	crp "github.com/kubex-ecosystem/gdbase/internal/security/crypto"
 	krs "github.com/kubex-ecosystem/gdbase/internal/security/external"
-	gl "github.com/kubex-ecosystem/logz/logger"
+	"github.com/kubex-ecosystem/logz"
+	gl "github.com/kubex-ecosystem/logz"
 
 	ti "github.com/kubex-ecosystem/gdbase/internal/types"
 	l "github.com/kubex-ecosystem/logz"
@@ -64,7 +65,7 @@ type DBConfig struct {
 	FilePath string `json:"file_path" yaml:"file_path" xml:"file_path" toml:"file_path" mapstructure:"file_path"`
 
 	// Logger is used to configure the logger
-	Logger l.Logger `json:"-" yaml:"-" xml:"-" toml:"-" mapstructure:"-"`
+	Logger *logz.LoggerZ `json:"-" yaml:"-" xml:"-" toml:"-" mapstructure:"-"`
 
 	// Mutexes is used to configure the mutexes, not serialized
 	*ti.Mutexes `json:"-" yaml:"-" xml:"-" toml:"-" mapstructure:"-"`
@@ -106,7 +107,7 @@ type DBConfig struct {
 	Mapper *ti.Mapper[*DBConfig] `json:"-" yaml:"-" xml:"-" toml:"-" mapstructure:"-"`
 }
 
-func newDBConfig(name, filePath string, enabled bool, logger l.Logger, debug bool) *DBConfig {
+func newDBConfig(name, filePath string, enabled bool, logger *logz.LoggerZ, debug bool) *DBConfig {
 	if logger == nil {
 		logger = l.NewLogger("GDBase")
 	}
@@ -220,7 +221,7 @@ func newDBConfig(name, filePath string, enabled bool, logger l.Logger, debug boo
 
 	return dbConfig
 }
-func NewDBConfigWithArgs(ctx context.Context, name, filePath string, enabled bool, logger l.Logger, debug bool) *DBConfig {
+func NewDBConfigWithArgs(ctx context.Context, name, filePath string, enabled bool, logger *logz.LoggerZ, debug bool) *DBConfig {
 	return newDBConfig(name, filePath, enabled, logger, debug)
 }
 func NewDBConfig(dbConfig *DBConfig) *DBConfig {
@@ -263,7 +264,7 @@ func NewDBConfigWithDBConnection(db *gorm.DB) *DBConfig {
 func NewDBConfigWithFilePath(name, filePath string) *DBConfig {
 	return newDBConfig(name, filePath, true, nil, false)
 }
-func NewDBConfigFromFile(ctx context.Context, dbConfigFilePath string, autoMigrate bool, logger l.Logger, debug bool) (*DBConfig, error) {
+func NewDBConfigFromFile(ctx context.Context, dbConfigFilePath string, autoMigrate bool, logger *logz.LoggerZ, debug bool) (*DBConfig, error) {
 	var dbConfig *DBConfig
 	if err := ctx.Err(); err != nil {
 		return nil, err
@@ -306,7 +307,7 @@ func (d *DBConfig) GetEnvironment() string {
 	}
 	var env *ti.Environment
 	if d.env == nil {
-		e, err := ti.NewEnvironmentType(kbx.GetEnvOrDefault("GDBASE_ENV_FILE", ".env"), d.IsConfidential, d.Logger)
+		e, err := ti.NewEnvironmentType(kbx.GetEnvOrDefault("GDBASE_ENV_FILE", ".env"), d.IsConfidential, *logz.LoggerZ)
 		if err != nil {
 			gl.Log("error", fmt.Sprintf("Error creating environment: %v", err))
 			return "development"

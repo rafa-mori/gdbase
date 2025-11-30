@@ -9,24 +9,23 @@ import (
 
 	"github.com/kubex-ecosystem/gdbase/internal/module/kbx"
 	"github.com/kubex-ecosystem/gdbase/internal/provider"
+	"github.com/kubex-ecosystem/logz"
 
 	svc "github.com/kubex-ecosystem/gdbase/internal/services"
 	"github.com/kubex-ecosystem/gdbase/internal/types"
-	gl "github.com/kubex-ecosystem/logz/logger"
-
-	l "github.com/kubex-ecosystem/logz"
+	gl "github.com/kubex-ecosystem/logz"
 )
 
 // DockerStackProvider wraps legacy Docker services into new Provider interface
 type DockerStackProvider struct {
-	logger        l.Logger
+	logger        *logz.LoggerZ
 	dockerService *svc.DockerService
 }
 
 // NewDockerStackProvider creates a new Docker-based provider
 func NewDockerStackProvider() *DockerStackProvider {
 	return &DockerStackProvider{
-		logger: l.GetLogger("DockerStack"),
+		logger: gl.GetLogger("DockerStackProvider"),
 	}
 }
 

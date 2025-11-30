@@ -7,7 +7,7 @@ import (
 	"github.com/docker/go-connections/nat"
 	"github.com/kubex-ecosystem/gdbase/internal/module/kbx"
 	t "github.com/kubex-ecosystem/gdbase/internal/types"
-	gl "github.com/kubex-ecosystem/logz/logger"
+	gl "github.com/kubex-ecosystem/logz"
 )
 
 func SetupRabbitMQ(config *t.RabbitMQ, dockerService IDockerService) error {

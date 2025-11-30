@@ -5,8 +5,8 @@ import (
 	"reflect"
 
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
-	l "github.com/kubex-ecosystem/logz"
-	gl "github.com/kubex-ecosystem/logz/logger"
+	"github.com/kubex-ecosystem/logz"
+	gl "github.com/kubex-ecosystem/logz"
 
 	"github.com/google/uuid"
 )
@@ -72,7 +72,7 @@ func (p *Property[T]) Prop() ci.IPropertyValBase[T] {
 }
 
 // GetLogger returns the logger of the property.
-func (p *Property[T]) GetLogger() l.Logger {
+func (p *Property[T]) GetLogger() *logz.LoggerZ {
 	return p.Prop().GetLogger()
 }
 

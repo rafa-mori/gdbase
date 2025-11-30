@@ -3,7 +3,7 @@ package cli
 import (
 	"fmt"
 
-	gl "github.com/kubex-ecosystem/logz/logger"
+	gl "github.com/kubex-ecosystem/logz"
 )
 
 type IWebSrvServerStatus interface {

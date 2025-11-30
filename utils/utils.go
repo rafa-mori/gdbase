@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	gl "github.com/kubex-ecosystem/logz/logger"
+	gl "github.com/kubex-ecosystem/logz"
 )
 
 // ValidateWorkerLimit valida o limite de workers

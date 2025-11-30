@@ -1,9 +1,11 @@
 package types
 
 import (
-	l "github.com/kubex-ecosystem/logz"
 	"sync"
 	"time"
+
+	"github.com/kubex-ecosystem/logz"
+	l "github.com/kubex-ecosystem/logz"
 )
 
 // TelemetryIdentifier is a struct that holds the identifier for telemetry data
@@ -13,7 +15,7 @@ type TelemetryIdentifier struct {
 	// Name is the name of the telemetry instance
 	Name string
 	// Logger is the Logger instance for this telemetry
-	Logger l.Logger
+	Logger *logz.LoggerZ
 	// Type is the type of telemetry (e.g., CPU, Memory, etc.)
 	Type string
 }
@@ -55,7 +57,7 @@ type TelemetryData struct {
 // TelemetryLogger is a struct that holds a Logger for telemetry data
 type TelemetryLogger struct {
 	// logger is the logger instance
-	logger l.Logger
+	logger *logz.LoggerZ
 }
 
 // TelemetryProperty is a struct that holds a property for telemetry data

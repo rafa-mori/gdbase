@@ -6,8 +6,8 @@ import (
 
 	"github.com/google/uuid"
 	svc "github.com/kubex-ecosystem/gdbase/internal/services"
+	gl "github.com/kubex-ecosystem/logz"
 	l "github.com/kubex-ecosystem/logz"
-	gl "github.com/kubex-ecosystem/logz/logger"
 	xtt "github.com/kubex-ecosystem/xtui/types"
 	"gorm.io/gorm"
 )

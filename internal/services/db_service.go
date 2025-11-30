@@ -14,11 +14,12 @@ import (
 	"github.com/kubex-ecosystem/gdbase/internal/module/kbx"
 	crp "github.com/kubex-ecosystem/gdbase/internal/security/crypto"
 	krs "github.com/kubex-ecosystem/gdbase/internal/security/external"
+	"github.com/kubex-ecosystem/logz"
 
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
 	ti "github.com/kubex-ecosystem/gdbase/internal/types"
+	gl "github.com/kubex-ecosystem/logz"
 	l "github.com/kubex-ecosystem/logz"
-	gl "github.com/kubex-ecosystem/logz/logger"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -51,7 +52,7 @@ type DBService interface {
 	RunMigrations(ctx context.Context, files map[string]string) (int, int, error)
 }
 type DBServiceImpl struct {
-	Logger    l.Logger
+	Logger    *logz.LoggerZ
 	reference ci.IReference
 	mutexes   ci.IMutexes
 
@@ -65,7 +66,7 @@ type DBServiceImpl struct {
 	properties map[string]any
 }
 
-func NewDatabaseServiceImpl(_ context.Context, config *DBConfig, logger l.Logger) (*DBServiceImpl, error) {
+func NewDatabaseServiceImpl(_ context.Context, config *DBConfig, logger *logz.LoggerZ) (*DBServiceImpl, error) {
 	if logger == nil {
 		logger = l.GetLogger("GDBase")
 	}
@@ -91,7 +92,7 @@ func NewDatabaseServiceImpl(_ context.Context, config *DBConfig, logger l.Logger
 	return dbService, nil
 }
 
-func NewDatabaseService(ctx context.Context, config *DBConfig, logger l.Logger) (DBService, error) {
+func NewDatabaseService(ctx context.Context, config *DBConfig, logger *logz.LoggerZ) (DBService, error) {
 	return NewDatabaseServiceImpl(ctx, config, logger)
 }
 

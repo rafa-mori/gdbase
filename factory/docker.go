@@ -9,12 +9,12 @@ import (
 	"github.com/docker/docker/client"
 	dksk "github.com/kubex-ecosystem/gdbase/internal/backends/dockerstack"
 	dkrs "github.com/kubex-ecosystem/gdbase/internal/services"
-	l "github.com/kubex-ecosystem/logz"
+	"github.com/kubex-ecosystem/logz"
 )
 
 type DockerSrv = dkrs.IDockerService
 
-func NewDockerService(config *dkrs.DBConfig, logger l.Logger) (DockerSrv, error) {
+func NewDockerService(config *dkrs.DBConfig, logger *logz.LoggerZ) (DockerSrv, error) {
 	return dkrs.NewDockerService(config, logger)
 }
 
@@ -81,10 +81,10 @@ func NewDockerStackProvider() *DockerStackProvider {
 	return dksk.New()
 }
 
-func NewMigrationManager(dsn string, logger l.Logger) *MigrationManager {
+func NewMigrationManager(dsn string, logger *logz.LoggerZ) *MigrationManager {
 	return dksk.NewMigrationManager(dsn, logger)
 }
 
-func CreateMigrationManager(dsn string, logger l.Logger) *MigrationManager {
+func CreateMigrationManager(dsn string, logger *logz.LoggerZ) *MigrationManager {
 	return dksk.NewMigrationManager(dsn, logger)
 }

@@ -22,8 +22,9 @@ import (
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
 	crp "github.com/kubex-ecosystem/gdbase/internal/security/crypto"
 	sci "github.com/kubex-ecosystem/gdbase/internal/security/interfaces"
+	"github.com/kubex-ecosystem/logz"
+	gl "github.com/kubex-ecosystem/logz"
 	l "github.com/kubex-ecosystem/logz"
-	gl "github.com/kubex-ecosystem/logz/logger"
 )
 
 var envCache *EnvCache = NewEnvCache()
@@ -44,7 +45,7 @@ func NewEnvCache() *EnvCache {
 type Environment struct {
 	isConfidential bool
 
-	Logger l.Logger
+	Logger *logz.LoggerZ
 
 	*Reference
 
@@ -65,7 +66,7 @@ type Environment struct {
 	mapper ci.IMapper[EnvCacheMap]
 }
 
-func newEnvironment(envFile string, isConfidential bool, logger l.Logger) (*Environment, error) {
+func newEnvironment(envFile string, isConfidential bool, logger *logz.LoggerZ) (*Environment, error) {
 	if logger == nil {
 		logger = l.GetLogger("Environment")
 	}
@@ -209,10 +210,10 @@ func newEnvironment(envFile string, isConfidential bool, logger l.Logger) (*Envi
 
 	return env, nil
 }
-func NewEnvironment(envFile string, isConfidential bool, logger l.Logger) (ci.IEnvironment, error) {
+func NewEnvironment(envFile string, isConfidential bool, logger *logz.LoggerZ) (ci.IEnvironment, error) {
 	return newEnvironment(envFile, isConfidential, logger)
 }
-func NewEnvironmentType(envFile string, isConfidential bool, logger l.Logger) (*Environment, error) {
+func NewEnvironmentType(envFile string, isConfidential bool, logger *logz.LoggerZ) (*Environment, error) {
 	return newEnvironment(envFile, isConfidential, logger)
 }
 

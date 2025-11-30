@@ -4,7 +4,7 @@ package module
 import (
 	"github.com/kubex-ecosystem/gdbase/cmd/cli"
 	"github.com/kubex-ecosystem/gdbase/internal/module/version"
-	gl "github.com/kubex-ecosystem/logz/logger"
+	gl "github.com/kubex-ecosystem/logz"
 	"github.com/spf13/cobra"
 
 	"os"

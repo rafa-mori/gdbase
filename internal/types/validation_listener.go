@@ -3,7 +3,7 @@ package types
 import (
 	"reflect"
 
-	gl "github.com/kubex-ecosystem/logz/logger"
+	gl "github.com/kubex-ecosystem/logz"
 )
 
 type ValidationListenerType string

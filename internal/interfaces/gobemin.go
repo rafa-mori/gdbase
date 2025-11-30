@@ -4,7 +4,7 @@ package interfaces
 import (
 	"net/http"
 
-	l "github.com/kubex-ecosystem/logz"
+	"github.com/kubex-ecosystem/logz"
 )
 
 type IGoBE interface {
@@ -15,7 +15,7 @@ type IGoBE interface {
 	Initialize() error
 	GetLogFilePath() string
 	GetConfigFilePath() string
-	GetLogger() l.Logger
+	GetLogger() *logz.LoggerZ
 	Mu() IMutexes
 	GetReference() IReference
 	Environment() IEnvironment

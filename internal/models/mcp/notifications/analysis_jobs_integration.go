@@ -8,7 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	analysisJobs "github.com/kubex-ecosystem/gdbase/internal/models/mcp/analysis_jobs"
-	gl "github.com/kubex-ecosystem/logz/logger"
+	gl "github.com/kubex-ecosystem/logz"
 )
 
 // AnalysisJobNotificationIntegration integra o sistema de notificações com analysis_jobs

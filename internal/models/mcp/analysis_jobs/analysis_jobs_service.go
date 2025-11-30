@@ -236,11 +236,11 @@ func (s *AnalysisJobService) ValidateJobData(ctx context.Context, job *AnalysisJ
 	}
 
 	validJobTypes := map[string]bool{
-		"SCORECARD_ANALYSIS": true,
-		"CODE_ANALYSIS":      true,
-		"SECURITY_ANALYSIS":  true,
+		"SCORECARD_ANALYSIS":   true,
+		"CODE_ANALYSIS":        true,
+		"SECURITY_ANALYSIS":    true,
 		"PERFORMANCE_ANALYSIS": true,
-		"DEPENDENCY_ANALYSIS": true,
+		"DEPENDENCY_ANALYSIS":  true,
 	}
 
 	if !validJobTypes[job.JobType] {

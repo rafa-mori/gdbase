@@ -7,7 +7,7 @@ import (
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
 	svc "github.com/kubex-ecosystem/gdbase/internal/services"
 	t "github.com/kubex-ecosystem/gdbase/internal/types"
-	l "github.com/kubex-ecosystem/logz"
+	"github.com/kubex-ecosystem/logz"
 )
 
 type DBConfig = svc.DBConfig
@@ -22,7 +22,7 @@ type DBService = svc.DBService
 type IDockerService = svc.IDockerService
 type DockerService = svc.DockerService
 
-func NewDatabaseService(ctx context.Context, config *svc.DBConfig, logger l.Logger) (svc.DBService, error) {
+func NewDatabaseService(ctx context.Context, config *svc.DBConfig, logger *logz.LoggerZ) (svc.DBService, error) {
 	return svc.NewDatabaseService(ctx, config, logger)
 }
 
@@ -30,10 +30,10 @@ func SetupDatabaseServices(ctx context.Context, d svc.IDockerService, config *sv
 	return svc.SetupDatabaseServices(ctx, d, config)
 }
 
-func NewDBConfigWithArgs(ctx context.Context, dbName, dbConfigFilePath string, autoMigrate bool, logger l.Logger, debug bool) *svc.DBConfig {
+func NewDBConfigWithArgs(ctx context.Context, dbName, dbConfigFilePath string, autoMigrate bool, logger *logz.LoggerZ, debug bool) *svc.DBConfig {
 	return svc.NewDBConfigWithArgs(ctx, dbName, dbConfigFilePath, autoMigrate, logger, debug)
 }
-func NewDBConfigFromFile(ctx context.Context, dbConfigFilePath string, autoMigrate bool, logger l.Logger, debug bool) (*svc.DBConfig, error) {
+func NewDBConfigFromFile(ctx context.Context, dbConfigFilePath string, autoMigrate bool, logger *logz.LoggerZ, debug bool) (*svc.DBConfig, error) {
 	return svc.NewDBConfigFromFile(ctx, dbConfigFilePath, autoMigrate, logger, debug)
 }
 

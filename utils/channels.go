@@ -2,7 +2,8 @@ package utils
 
 import (
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
-	gl "github.com/kubex-ecosystem/logz/logger"
+	"github.com/kubex-ecosystem/logz"
+	gl "github.com/kubex-ecosystem/logz"
 
 	"fmt"
 	"reflect"
@@ -97,11 +98,11 @@ func chanRoutineDefer[T any](v ci.IChannelCtl[T], chCtl chan string, ch chan T) 
 func chanRoutineWrapper[T any](v ci.IChannelCtl[T]) {
 	gl.Log("debug", "Setting monitor routine for:", v.GetName(), "ID:", v.GetID().String())
 	if rawChCtl, chCtlType, chCtlOk := v.GetSubChannelByName("ctl"); !chCtlOk {
-		gl.LogObjLogger(&v, "error", "ChannelCtl: no control channel found")
+		logz.Log("error", "ChannelCtl: no control channel found")
 		return
 	} else {
 		if chCtlType != reflect.TypeOf("string") {
-			gl.LogObjLogger(&v, "error", "ChannelCtl: control channel is not a string channel")
+			logz.Log("error", "ChannelCtl: control channel is not a string channel")
 			return
 		}
 		chCtl := reflect.ValueOf(rawChCtl).Interface().(chan string)

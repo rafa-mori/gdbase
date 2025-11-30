@@ -5,7 +5,7 @@ import (
 	svc "github.com/kubex-ecosystem/gdbase/internal/services"
 	t "github.com/kubex-ecosystem/gdbase/internal/types"
 	s "github.com/kubex-ecosystem/gdbase/services"
-	l "github.com/kubex-ecosystem/logz"
+	"github.com/kubex-ecosystem/logz"
 )
 
 const (
@@ -38,6 +38,6 @@ type RedisConfig = t.Database
 
 // NewDBConfig creates a new DBConfig instance
 
-func NewDBConfig(name, filePath string, enabled bool, logger l.Logger, debug bool) *DBConfig {
+func NewDBConfig(name, filePath string, enabled bool, logger *logz.LoggerZ, debug bool) *DBConfig {
 	return nil
 }

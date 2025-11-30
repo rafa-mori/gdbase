@@ -1,6 +1,6 @@
 module github.com/kubex-ecosystem/gdbase
 
-go 1.25.3
+go 1.25.4
 
 require (
 	//github.com/docker/docker v28.4.0+incompatible
@@ -9,7 +9,7 @@ require (
 	github.com/fatih/color v1.18.0
 	github.com/goccy/go-json v0.10.5
 	github.com/google/uuid v1.6.0
-	github.com/kubex-ecosystem/logz v1.5.5
+	github.com/kubex-ecosystem/logz v1.5.7
 	github.com/opencontainers/image-spec v1.1.1
 	github.com/pelletier/go-toml/v2 v2.2.4
 	github.com/spf13/cobra v1.10.1
@@ -132,3 +132,5 @@ require (
 	google.golang.org/protobuf v1.36.9 // indirect
 	gotest.tools/v3 v3.5.2 // indirect
 )
+
+replace github.com/kubex-ecosystem/logz => ../logz

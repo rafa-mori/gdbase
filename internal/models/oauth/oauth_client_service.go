@@ -3,7 +3,7 @@ package oauth
 import (
 	"fmt"
 
-	gl "github.com/kubex-ecosystem/logz/logger"
+	gl "github.com/kubex-ecosystem/logz"
 )
 
 // IOAuthClientService interface for OAuth client service operations

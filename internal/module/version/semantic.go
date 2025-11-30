@@ -12,11 +12,10 @@ import (
 	"time"
 
 	manifest "github.com/kubex-ecosystem/gdbase/internal/module/info"
-	"github.com/kubex-ecosystem/logz/logger"
+	gl "github.com/kubex-ecosystem/logz"
 	"github.com/spf13/cobra"
 )
 
-var gl = logger.GetLogger[ServiceImpl](nil)
 var (
 	info manifest.Manifest
 	vrs  Service

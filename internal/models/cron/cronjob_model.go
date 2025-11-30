@@ -10,7 +10,7 @@ import (
 
 	jobqueue "github.com/kubex-ecosystem/gdbase/internal/models/job_queue"
 
-	gl "github.com/kubex-ecosystem/logz/logger"
+	gl "github.com/kubex-ecosystem/logz"
 )
 
 type ICronJobModel interface {

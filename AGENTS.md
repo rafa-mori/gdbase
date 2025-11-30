@@ -20,7 +20,7 @@ Os agentes (Claude, Codex, Copilot, etc.) leem este documento como referência d
 
   ```go
   import (
-      gl "github.com/kubex-ecosystem/logz/logger"
+      gl "github.com/kubex-ecosystem/logz"
   )
   ```
 

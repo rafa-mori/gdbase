@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	svc "github.com/kubex-ecosystem/gdbase/internal/services"
-	gl "github.com/kubex-ecosystem/logz/logger"
+	gl "github.com/kubex-ecosystem/logz"
 
 	"gorm.io/gorm"
 )

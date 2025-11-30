@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/kubex-ecosystem/gdbase/internal/bootstrap"
-	l "github.com/kubex-ecosystem/logz"
-	gl "github.com/kubex-ecosystem/logz/logger"
+	"github.com/kubex-ecosystem/logz"
+	gl "github.com/kubex-ecosystem/logz"
 
 	_ "github.com/lib/pq"
 )
@@ -39,7 +39,7 @@ type MigrationManager struct {
 }
 
 // NewMigrationManager creates a new migration manager
-func NewMigrationManager(dsn string, logger l.Logger) *MigrationManager {
+func NewMigrationManager(dsn string, logger *logz.LoggerZ) *MigrationManager {
 	return &MigrationManager{
 		dsn: dsn,
 	}

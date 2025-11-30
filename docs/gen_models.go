@@ -11,8 +11,8 @@ import (
 
 	svc "github.com/kubex-ecosystem/gdbase/internal/services"
 	tp "github.com/kubex-ecosystem/gdbase/internal/types"
+	gl "github.com/kubex-ecosystem/logz"
 	l "github.com/kubex-ecosystem/logz"
-	gl "github.com/kubex-ecosystem/logz/logger"
 
 	_ "gorm.io/driver/mysql"
 	_ "gorm.io/driver/postgres"

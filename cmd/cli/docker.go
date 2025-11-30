@@ -7,8 +7,7 @@ import (
 
 	"github.com/kubex-ecosystem/gdbase/factory"
 	s "github.com/kubex-ecosystem/gdbase/internal/services"
-	l "github.com/kubex-ecosystem/logz"
-	gl "github.com/kubex-ecosystem/logz/logger"
+	gl "github.com/kubex-ecosystem/logz"
 	"github.com/spf13/cobra"
 )
 
@@ -61,7 +60,7 @@ func startDockerCmd() *cobra.Command {
 		Long:        longDesc,
 		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("GDBASE_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			dkr, dkrErr := factory.NewDockerService(nil, l.GetLogger("GDBase"))
+			dkr, dkrErr := factory.NewDockerService(nil, gl.GetLogger("GDBase"))
 			if dkrErr != nil {
 				fmt.Printf("Error starting Docker service: %v\n", dkrErr)
 				return
@@ -146,7 +145,7 @@ func restartDockerCmd() *cobra.Command {
 		Long:        longDesc,
 		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("GDBASE_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			dkr, dkrErr := factory.NewDockerService(nil, l.GetLogger("GDBase"))
+			dkr, dkrErr := factory.NewDockerService(nil, gl.GetLogger("GDBase"))
 			if dkrErr != nil {
 				fmt.Printf("Error restarting Docker service: %v\n", dkrErr)
 				return
@@ -286,7 +285,7 @@ func getVolumesListCmd() *cobra.Command {
 		Long:        longDesc,
 		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("GDBASE_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			dkr, dkrErr := factory.NewDockerService(nil, l.GetLogger("GDBase"))
+			dkr, dkrErr := factory.NewDockerService(nil, gl.GetLogger("GDBase"))
 			if dkrErr != nil {
 				fmt.Printf("Error getting volumes list: %v\n", dkrErr)
 				return

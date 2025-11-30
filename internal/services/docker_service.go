@@ -20,8 +20,9 @@ import (
 	evs "github.com/kubex-ecosystem/gdbase/internal/events"
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
 	it "github.com/kubex-ecosystem/gdbase/internal/types"
+	"github.com/kubex-ecosystem/logz"
+	gl "github.com/kubex-ecosystem/logz"
 	l "github.com/kubex-ecosystem/logz"
-	gl "github.com/kubex-ecosystem/logz/logger"
 
 	_ "embed"
 )
@@ -75,7 +76,7 @@ type DockerService struct {
 	*ContainerVolumeReport
 	*DockerUtils
 
-	Logger    l.Logger
+	Logger    *logz.LoggerZ
 	reference *it.Reference
 	mutexes   *it.Mutexes
 
@@ -88,7 +89,7 @@ type DockerService struct {
 	eventBus   *evs.EventBus
 }
 
-func newDockerServiceBus(config *DBConfig, logger l.Logger) (IDockerService, error) {
+func newDockerServiceBus(config *DBConfig, logger *logz.LoggerZ) (IDockerService, error) {
 	EnsureDockerIsRunning()
 
 	if logger == nil {
@@ -125,11 +126,11 @@ func newDockerServiceBus(config *DBConfig, logger l.Logger) (IDockerService, err
 	}
 	return dockerService, nil
 }
-func newDockerService(config *DBConfig, logger l.Logger) (IDockerService, error) {
+func newDockerService(config *DBConfig, logger *logz.LoggerZ) (IDockerService, error) {
 	EnsureDockerIsRunning()
 	return newDockerServiceBus(config, logger)
 }
-func NewDockerService(config *DBConfig, logger l.Logger) (IDockerService, error) {
+func NewDockerService(config *DBConfig, logger *logz.LoggerZ) (IDockerService, error) {
 	return newDockerService(config, logger)
 }
 
