@@ -1,7 +1,7 @@
 package cli
 
 import (
-	gl "github.com/kubex-ecosystem/logz"
+	logz "github.com/kubex-ecosystem/logz"
 )
 
 type IWebSrvServerData interface {
@@ -27,23 +27,23 @@ func NewWebSrvServerData(ports []string, pubAddress, authToken, uptime string, p
 
 func (w *WebSrvServerData) GetWebSrvServerData() (WebSrvProcessServer, error) {
 	if w.Ports == nil {
-		gl.Log("error", "No ports found")
+		logz.Log("error", "No ports found")
 		return WebSrvProcessServer{}, nil
 	}
 	if w.PubAddress == "" {
-		gl.Log("error", "No public address found")
+		logz.Log("error", "No public address found")
 		return WebSrvProcessServer{}, nil
 	}
 	if w.AuthToken == "" {
-		gl.Log("error", "No auth token found")
+		logz.Log("error", "No auth token found")
 		return WebSrvProcessServer{}, nil
 	}
 	if w.Uptime == "" {
-		gl.Log("error", "No uptime found")
+		logz.Log("error", "No uptime found")
 		return WebSrvProcessServer{}, nil
 	}
 	if w.Processes == nil {
-		gl.Log("error", "No processes found")
+		logz.Log("error", "No processes found")
 		return WebSrvProcessServer{}, nil
 	}
 	return WebSrvProcessServer{}, nil

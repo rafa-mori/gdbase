@@ -33,7 +33,7 @@ type Config struct {
 }
 
 func FromEnv() Config {
-	raw := os.Getenv("CANALIZEDS_BACKENDS")
+	raw := os.Getenv("KUBEXDS_BACKENDS")
 	if raw == "" {
 		raw = "dockerstack"
 	}
@@ -41,7 +41,7 @@ func FromEnv() Config {
 	for i := range backends {
 		backends[i] = strings.TrimSpace(backends[i])
 	}
-	strict := strings.EqualFold(os.Getenv("CANALIZEDS_STRICT"), "true")
+	strict := strings.EqualFold(os.Getenv("KUBEXDS_STRICT"), "true")
 	return Config{
 		Backends: backends, Strict: strict,
 	}
@@ -73,7 +73,7 @@ func Start(ctx context.Context, cfg Config) (Result, error) {
 			Services:      cfg.ProvidersSvc,
 			PreferredPort: cfg.PreferredPort,
 			Secrets:       cfg.Secrets,
-			Labels:        map[string]string{"owner": "canalizedb"},
+			Labels:        map[string]string{"owner": "kubexdb"},
 		}
 		eps, err := p.Start(ctx, spec)
 		if err != nil {

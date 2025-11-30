@@ -19,7 +19,7 @@ func UtilsCmds() *cobra.Command {
 		Aliases:     []string{"u", "util"},
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("GDBASE_HIDEBANNER") == "true")),
+		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
 	}
 	uCmd.AddCommand(installUtilsCmd())
 	uCmd.AddCommand(uninstallUtilsCmd())
@@ -37,7 +37,7 @@ func installUtilsCmd() *cobra.Command {
 		Use:         "install",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("GDBASE_HIDEBANNER") == "true")),
+		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			helpers.InstallBashHelpers()
 		},
@@ -56,7 +56,7 @@ func uninstallUtilsCmd() *cobra.Command {
 		Use:         "uninstall",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("GDBASE_HIDEBANNER") == "true")),
+		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
 			helpers.UninstallBashHelpers()
 		},

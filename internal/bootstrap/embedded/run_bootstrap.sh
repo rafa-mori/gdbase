@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # ==========================================
-# CANALIZE BOOTSTRAP EXECUTOR v3.0
+# KUBEX BOOTSTRAP EXECUTOR v3.0
 # ==========================================
 # Versão: 3.0.0
 # Data: 2025-11-10
 # Autores: Rafael Mori (Desenvolvedor) + Claude Code (Anthropic)
 # ==========================================
 # Descrição:
-#   Script executor do Schema Híbrido Canalize v3.0
+#   Script executor do Schema Híbrido Kubex v3.0
 #   Executa todas as 8 etapas em ordem, com validação e logging.
 # ==========================================
 
@@ -228,7 +228,7 @@ main() {
   mkdir -p "$LOG_DIR"
 
   # Header
-  print_header "🚀 CANALIZE SCHEMA HÍBRIDO v3.0 - INICIANDO"
+  print_header "🚀 KUBEX SCHEMA HÍBRIDO v3.0 - INICIANDO"
 
   log_info "Timestamp: $(date)"
   log_info "Database: ${DATABASE_URL//:*@/:***@}"

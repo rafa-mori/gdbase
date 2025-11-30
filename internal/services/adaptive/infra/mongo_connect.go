@@ -23,7 +23,7 @@ func BuildMongoURI(cfg *types.DBConfig) (string, string) {
 	port := cfg.Port
 	db := cfg.DBName
 	if db == "" {
-		db = "canalizeds"
+		db = "kubexds"
 	}
 	usr := url.QueryEscape(user)
 	pwd := url.QueryEscape(pass)

@@ -36,12 +36,12 @@ func SetupDatabaseServices(ctx context.Context, d ci.IDockerService, rootConfig 
 			if dbConfig != nil {
 				if (dbConfig.Type == "postgres" || dbConfig.Type == "postgresql") && kbx.DefaultTrue(dbConfig.Enabled) {
 					// Check if the database is already running
-					if IsServiceRunning("canalizedb-pg") {
-						logz.Log("debug", fmt.Sprintf("✅ %s já está rodando!", "canalizedb-pg"))
+					if IsServiceRunning("kubexdb-pg") {
+						logz.Log("debug", fmt.Sprintf("✅ %s já está rodando!", "kubexdb-pg"))
 						continue
 					} else {
-						if err := d.StartContainerByName("canalizedb-pg"); err == nil {
-							logz.Log("debug", fmt.Sprintf("✅ %s já está rodando!", "canalizedb-pg"))
+						if err := d.StartContainerByName("kubexdb-pg"); err == nil {
+							logz.Log("debug", fmt.Sprintf("✅ %s já está rodando!", "kubexdb-pg"))
 							continue
 						} else {
 							// Check if Password is empty, if so, try to retrieve it from keyring
@@ -87,12 +87,12 @@ func SetupDatabaseServices(ctx context.Context, d ci.IDockerService, rootConfig 
 							// 			continue
 							// 		}
 							// 	}
-							// 	if err := d.CreateVolume("canalizedb-pg-init", pgVolInitDir); err != nil {
+							// 	if err := d.CreateVolume("kubexdb-pg-init", pgVolInitDir); err != nil {
 							// 		logz.Log("error", fmt.Sprintf("❌ Erro ao criar volume do PostgreSQL: %v", err))
 							// 		continue
 							// 	}
 							// 	pgVolDataDir := filepath.Join(pgVolRootDir, "pgdata")
-							// 	if err := d.CreateVolume("canalizedb-pg-data", pgVolDataDir); err != nil {
+							// 	if err := d.CreateVolume("kubexdb-pg-data", pgVolDataDir); err != nil {
 							// 		logz.Log("error", fmt.Sprintf("❌ Erro ao criar volume do PostgreSQL: %v", err))
 							// 		continue
 							// 	}
@@ -124,7 +124,7 @@ func SetupDatabaseServices(ctx context.Context, d ci.IDockerService, rootConfig 
 
 							// Insert the PostgreSQL service into the services slice
 							dbConnObj := NewServices(
-								"canalizedb-pg",
+								"kubexdb-pg",
 								"postgres:17-alpine",
 								map[string]string{
 									// "POSTGRES_HOST_AUTH_METHOD=trust", // Use only for development, not recommended for production

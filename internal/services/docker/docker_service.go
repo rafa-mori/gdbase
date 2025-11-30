@@ -276,7 +276,7 @@ func (d *DockerService) CreateVolume(volumeName, pathsForBind string) error {
 		if structuredVolume.HostPath == "" {
 			createOpts = v.CreateOptions{
 				Name:   structuredVolume.Name,
-				Labels: map[string]string{"created_by": "canalizedb"},
+				Labels: map[string]string{"created_by": "kubexdb"},
 			}
 		} else {
 			// Ensure the host path exists
@@ -285,7 +285,7 @@ func (d *DockerService) CreateVolume(volumeName, pathsForBind string) error {
 			// }
 			createOpts = v.CreateOptions{
 				Name:   structuredVolume.Name,
-				Labels: map[string]string{"created_by": "canalizedb"},
+				Labels: map[string]string{"created_by": "kubexdb"},
 				Driver: "local",
 				DriverOpts: map[string]string{
 					"type":   "none",
@@ -330,7 +330,7 @@ func (d *DockerService) GetVolumesList() ([]*v.Volume, error) {
 
 	var volumeList []*v.Volume
 	for _, volume := range volumes.Volumes {
-		if volume.Name == "canalizedb-pg-data" /* || volume.Name != "canalizedb-redis-data" */ {
+		if volume.Name == "kubexdb-pg-data" /* || volume.Name != "kubexdb-redis-data" */ {
 			volumeList = append(volumeList, volume)
 		}
 	}

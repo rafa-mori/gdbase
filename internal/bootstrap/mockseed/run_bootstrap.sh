@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2155,SC2207
 # ==========================================
-# CANALIZE SEED HYDRATION v0.0.1
+# KUBEX SEED HYDRATION v0.0.1
 # ==========================================
 # Versão: 0.0.1
 # Data: 2025-11-26
 # Autores: Rafael Mori (Desenvolvedor) + ChatGPT (OpenAI)
 # ==========================================
 # Descrição:
-#   Script executor do Seed Hydration Canalize v0.0.1
+#   Script executor do Seed Hydration Kubex v0.0.1
 #   Inicializa dados para testes e demonstrações com lógica realista.
 # ==========================================
 
@@ -315,7 +315,7 @@ main() {
   mkdir -p "$LOG_DIR"
 
   # Header
-  print_header "🚀 CANALIZE HYDRATION v0.0.1 - INICIANDO"
+  print_header "🚀 KUBEX HYDRATION v0.0.1 - INICIANDO"
 
   log_info "Timestamp: $(date)"
   log_info "Database: ${DATABASE_URL//:*@/:***@}"

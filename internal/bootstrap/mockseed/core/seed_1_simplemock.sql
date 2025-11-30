@@ -1,5 +1,5 @@
 -- ============================================================
--- SEED CANALIZE - V0.1 (Minimal, Realistic, Coherent)
+-- SEED KUBEX - V0.1 (Minimal, Realistic, Coherent)
 -- ============================================================
 
 -- ================
@@ -10,7 +10,7 @@ insert into orgs (
    name,
    created_at
 ) values ( '01JHX4ZCP3G2T4JC3P8VBA5N3A',
-           'Canalize PRM',
+           'Kubex PRM',
            now() );
 
 -- ================
@@ -25,8 +25,8 @@ insert into tenants (
    created_at
 ) values ( '01JHX4ZH8Z9AGF1AFM7V0E7EAQ',
            '01JHX4ZCP3G2T4JC3P8VBA5N3A',
-           'Canalize HQ',
-           'canalize-hq',
+           'Kubex HQ',
+           'kubex-hq',
            'active',
            now() );
 
@@ -119,20 +119,20 @@ insert into users (
 ) values
   -- Usuário principal (você)
  ( '01JHX54TJEGW95WNH9TEG10M4H',
-           'rafael@canalize.app',
+           'rafael@kubex.app',
            'Rafael Mori',
            crypt(
-              'canalize123',
+              'kubex123',
               gen_salt('bf')
            ),
            now() ),
 
   -- Usuário secundário (Thiago)
            ( '01JHX54TJQBV8Z7RPKT4HR8X7N',
-                     'thiago@canalize.app',
+                     'thiago@kubex.app',
                      'Thiago CTO',
                      crypt(
-                        'canalize123',
+                        'kubex123',
                         gen_salt('bf')
                      ),
                      now() );
@@ -193,7 +193,7 @@ insert into invites (
    status,
    created_at
 ) values ( '01JHX5AHDV7H8T6C2911CKGHEC',
-           'novo-user@canalize.app',
+           'novo-user@kubex.app',
            '01JHX5237J1TQ5J0V8B4CWVZ4N', -- viewer
            '01JHX4ZH8Z9AGF1AFM7V0E7EAQ',
            '01JHX54TJEGW95WNH9TEG10M4H',

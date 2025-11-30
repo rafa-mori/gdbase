@@ -97,16 +97,16 @@ func (p *DockerStackProvider) ConvertSpecToDBConfig(spec provider.StartSpec) *en
 		case provider.EnginePostgres:
 			vol, ok := db.Options["volume"].(string)
 			if !ok || vol == "" {
-				vol = "canalize_pgdata"
+				vol = "kubex_pgdata"
 			}
 			db.Options = map[string]interface{}{
 				"volume": vol,
 			}
-			key = "canalize_db"
+			key = "kubex_db"
 			db.Enabled = kbx.BoolPtr(true)
 			db.Type = "postgresql"
-			db.Name = "canalize_db"
-			db.User = "canalize_adm"
+			db.Name = "kubex_db"
+			db.User = "kubex_adm"
 			db.Pass = spec.Secrets["pg_admin"]
 			db.Host = "127.0.0.1"
 			if port, ok := spec.PreferredPort["pg"]; ok {
@@ -119,7 +119,7 @@ func (p *DockerStackProvider) ConvertSpecToDBConfig(spec provider.StartSpec) *en
 			key = "mongodb"
 			db.Enabled = kbx.BoolPtr(true)
 			db.Type = "mongodb"
-			db.Name = "canalizedb"
+			db.Name = "kubexdb"
 			db.User = "root"
 			db.Pass = spec.Secrets["mongo_root"]
 			db.Host = "127.0.0.1"
@@ -227,7 +227,7 @@ func (p *DockerStackProvider) ExtractEndpoints(cfg *engine.DatabaseManager) (map
 
 		switch db.Config.Type {
 		case "postgresql", "postgres":
-			name = "canalize_db"
+			name = "kubex_db"
 			ep.Port = db.Config.Port
 			ep.Host = db.Config.Host
 			ep.DSN = fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=disable",

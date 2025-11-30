@@ -16,7 +16,7 @@ import (
 // LoadRootConfig carrega um arquivo JSON simples de config.
 func LoadRootConfig(path string) (*kbx.RootConfig, error) {
 	if path == "" {
-		path = os.ExpandEnv(kbx.DefaultCanalizeDSConfigPath)
+		path = os.ExpandEnv(kbx.DefaultKubexDSConfigPath)
 	}
 
 	data, err := os.ReadFile(os.ExpandEnv(path))
@@ -33,7 +33,7 @@ func LoadRootConfig(path string) (*kbx.RootConfig, error) {
 		return cfgObj, nil
 	}
 
-	newPath := filepath.Join(os.ExpandEnv(kbx.DefaultConfigDir), "canalize_ds", "config", filepath.Base(path))
+	newPath := filepath.Join(os.ExpandEnv(kbx.DefaultConfigDir), "kubex_ds", "config", filepath.Base(path))
 	cfgMpC := types.NewMapperType(cfgMp.GetObject(), os.ExpandEnv(newPath))
 	cfgMpC.SerializeToFile(filepath.Ext(path)[1:])
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
@@ -58,7 +58,7 @@ func SaveRootConfig(cfg *kbx.RootConfig) error {
 	return os.WriteFile(cfg.FilePath, data, 0o640)
 }
 
-// GetDefaultConfigPath calcula o path padrão $HOME/.canalize/database/canalize_db/config.json
+// GetDefaultConfigPath calcula o path padrão $HOME/.kubex/database/kubex_db/config.json
 func GetDefaultConfigPath() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
@@ -66,9 +66,9 @@ func GetDefaultConfigPath() (string, error) {
 	}
 	return filepath.Join(
 		home,
-		".canalize",
+		".kubex",
 		"database",
-		"canalize_db",
+		"kubex_db",
 		"config.json",
 	), nil
 }
@@ -98,22 +98,22 @@ func GenerateDefaultPostgresConfig() *kbx.RootConfig {
 	pass := GenerateRandomPassword(40)
 
 	db := &kbx.DBConfig{
-		// ID:        "canalize_db",
-		// Name:      "canalize_db",
+		// ID:        "kubex_db",
+		// Name:      "kubex_db",
 		// IsDefault: true,
 		Enabled: kbx.BoolPtr(true),
 		// Type:      DBTypePostgres,
 		Host:   "127.0.0.1",
 		Port:   "5432",
-		User:   "canalize_adm",
+		User:   "kubex_adm",
 		Pass:   pass,
-		DBName: "canalize_db",
+		DBName: "kubex_db",
 		Schema: "public",
 		Options: map[string]any{
 			"sslmode":           "disable",
 			"max_connections":   50,
 			"connect_timeout":   10,
-			"application_name":  "canalize_ds",
+			"application_name":  "kubex_ds",
 			"pool_max_lifetime": "30m",
 		},
 	}
@@ -130,7 +130,7 @@ func GenerateDefaultPostgresConfig() *kbx.RootConfig {
 	)
 
 	return &kbx.RootConfig{
-		Name:      "canalize_ds",
+		Name:      "kubex_ds",
 		Enabled:   kbx.BoolPtr(true),
 		Databases: []*kbx.DBConfig{db},
 	}

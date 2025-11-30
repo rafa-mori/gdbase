@@ -7,7 +7,7 @@
     "compatibility": ["PostgreSQL 14+", "PostgreSQL 15+", "PostgreSQL 16+", "PostgreSQL 17+"],
     "required_extensions": ["uuid-ossp", "pgcrypto", "citext"]
   },
-  "description": "Bootstrap do Schema Híbrido Canalize v3.0 - Combina melhor de sql_1 e sql_2",
+  "description": "Bootstrap do Schema Híbrido Kubex v3.0 - Combina melhor de sql_1 e sql_2",
   "execution_modes": {
     "fresh_install": "Instalação completa em banco vazio",
     "idempotent": "Pode ser reexecutado sem efeitos colaterais",
@@ -256,7 +256,7 @@
   "authors": [
     {
       "name": "Desenvolvedor",
-      "organization": "Canalize",
+      "organization": "Kubex",
       "role": "Technical Lead"
     },
     {
@@ -265,9 +265,9 @@
       "role": "Schema Architect"
     }
   ],
-  "license": "Proprietary - Canalize",
+  "license": "Proprietary - Kubex",
   "support": {
     "documentation": "README.md",
-    "issues": "Contactar equipe de desenvolvimento Canalize"
+    "issues": "Contactar equipe de desenvolvimento Kubex"
   }
 }

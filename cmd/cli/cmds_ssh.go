@@ -23,7 +23,7 @@ func SSHCmds() *cobra.Command {
 		Aliases:     []string{"s", "ss"},
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("GDBASE_HIDEBANNER") == "true")),
+		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
 	}
 
 	rootCmd.AddCommand(sshTunnelCmd())
@@ -46,7 +46,7 @@ func sshTunnelCmd() *cobra.Command {
 		Use:         "tunnel",
 		Aliases:     []string{"tun", "t"},
 		Short:       shortDesc,
-		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("GDBASE_HIDEBANNER") == "true")),
+		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if background {
 				sshCmdRun := exec.Command("kbx", "u", "s", "tunnel-service-background", "--sshUser", sshUser, "--sshCert", sshCert, "--sshPassword", sshPassword, "--sshAddress", sshAddress, "--sshPort", sshPort, "--tunnels", strings.Join(tunnels, ","))

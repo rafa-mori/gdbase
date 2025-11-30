@@ -62,7 +62,7 @@ func Bootstrap(ctx context.Context,
 	}
 
 	if opts != nil && opts.AppName != "" {
-		opts.AppName = "canalize-ds"
+		opts.AppName = "kubex-ds"
 	}
 
 	logger.Info(fmt.Sprintf("🧠 [dsruntime] bootstrap iniciado (app=%s)", opts.AppName))

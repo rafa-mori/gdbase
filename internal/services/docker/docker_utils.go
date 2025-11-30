@@ -174,10 +174,10 @@ func (cnr *ContainerNameReport) GetName(args ...any) string {
 	if !ok {
 		return ""
 	}
-	if strings.HasPrefix(serviceName, "canalizedb-") {
+	if strings.HasPrefix(serviceName, "kubexdb-") {
 		return serviceName
 	}
-	return "canalizedb-" + serviceName
+	return "kubexdb-" + serviceName
 }
 func (cnr *ContainerNameReport) GetNames(args ...any) []string {
 	containerNames := make([]string, len(args))

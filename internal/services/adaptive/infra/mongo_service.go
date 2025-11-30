@@ -16,15 +16,15 @@ import (
 
 // MongoBootstrapOptions controls how EnsureMongoUp behaves.
 type MongoBootstrapOptions struct {
-	// Database is the database name to create/use. Default: canalizeds
+	// Database is the database name to create/use. Default: kubexds
 	Database string
 	// ComposeFile is the docker compose file path. Default: support/docker/mongo.yaml
 	ComposeFile string
 	// WaitTimeout is the readiness timeout. Default: 45s
 	WaitTimeout time.Duration
 	// AppUser / AppPass are the application credentials created by init.sh
-	AppUser string // default: canalizeds
-	AppPass string // default: canalizeds_pass
+	AppUser string // default: kubexds
+	AppPass string // default: kubexds_pass
 }
 
 // EnsureMongoUp starts MongoDB (via docker compose) if needed and returns an application DSN.
@@ -48,7 +48,7 @@ func EnsureMongoUp(ctx context.Context, cfg *types.DBConfig, logger *logz.Logger
 		opts.WaitTimeout = 45 * time.Second
 	}
 	if cfg.DBName == "" {
-		cfg.DBName = "canalizeds"
+		cfg.DBName = "kubexds"
 	}
 	// if cfg.Volume == "" {
 	// 	cfg.Volume = ".data/mongo" // relative to repo root
@@ -56,10 +56,10 @@ func EnsureMongoUp(ctx context.Context, cfg *types.DBConfig, logger *logz.Logger
 	appUser := opts.AppUser
 	appPass := opts.AppPass
 	if appUser == "" {
-		appUser = "canalizeds"
+		appUser = "kubexds"
 	}
 	if appPass == "" {
-		appPass = "canalizeds_pass"
+		appPass = "kubexds_pass"
 	}
 
 	// Resolve admin credentials

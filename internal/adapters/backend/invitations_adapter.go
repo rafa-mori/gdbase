@@ -1,23 +1,22 @@
-// Package backend provides adapters for the canalize_be backend.
-// This package implements the interfaces defined in canalize_be and bridges them
+// Package backend provides adapters for the kubex_be backend.
+// This package implements the interfaces defined in kubex_be and bridges them
 // to the actual database implementation (GORM + PostgreSQL).
 package backend
 
 import (
 	// "context"
 	"time"
-
-	// Import canalizedb models
+	// Import kubexdb models
 	// "github.com/kubex-ecosystem/gdbase/internal/models/invitations"
 	// Import BE interface (the contract)
 	// Note: In practice, this import path should match your actual module path
-	// beInvitations "github.com/canalize-prm/canalize_be/internal/adapters/database/invitations"
+	// beInvitations "github.com/kubex-prm/kubex_be/internal/adapters/database/invitations"
 )
 
 // ===========================================================================
 // TYPE MAPPINGS
 // These types mirror the BE interface types to avoid circular imports.
-// In production, you'd import them from canalize_be.
+// In production, you'd import them from kubex_be.
 // ===========================================================================
 
 type InvitationStatus string
@@ -106,7 +105,7 @@ type PaginatedInvitations struct {
 // ADAPTER IMPLEMENTATION
 // ===========================================================================
 
-// InvitationsAdapter implements the BE Adapter interface using canalizedb
+// InvitationsAdapter implements the BE Adapter interface using kubexdb
 type InvitationsAdapter struct {
 	// service invitations.Service
 }

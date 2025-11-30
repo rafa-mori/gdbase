@@ -6,7 +6,7 @@ import (
 )
 
 // AdaptiveRepo atua como ponte genérica entre múltiplos backends.
-// Ele é drop-in compatível com qualquer Repository padrão dos models Canalize.
+// Ele é drop-in compatível com qualquer Repository padrão dos models Kubex.
 type AdaptiveRepo struct {
 	sql   backend.Backend
 	mongo backend.Backend

@@ -34,7 +34,7 @@ func (a *AdaptiveService[T]) call(method string, args ...any) []reflect.Value {
 	return m.Call(in)
 }
 
-// CRUD genérico — compatível com todos os services Canalize
+// CRUD genérico — compatível com todos os services Kubex
 
 func (a *AdaptiveService[T]) Create(v any) error {
 	return a.call("Create", v)[0].Interface().(error)

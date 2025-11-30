@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/kubex-ecosystem/gdbase/internal/module/kbx"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-func configCmd() *cobra.Command {
-	var configFile string
+func ConfigCmd() *cobra.Command {
+	var initArgs = &kbx.InitArgs{}
+	// var configFile string
 	shortDesc := "Edit configuration"
 	longDesc := "Edit configuration file interactively"
 
@@ -17,9 +19,9 @@ func configCmd() *cobra.Command {
 		Use:         "config",
 		Short:       shortDesc,
 		Long:        longDesc,
-		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("GDBASE_HIDEBANNER") == "true")),
+		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("KUBEXDS_HIDEBANNER") == "true")),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			config, err := ReadConfig(configFile)
+			config, err := ReadConfig(initArgs.ConfigFile)
 			if err != nil {
 				return err
 			}
@@ -29,7 +31,7 @@ func configCmd() *cobra.Command {
 				return err
 			}
 
-			if err := SaveConfig(configFile, updatedConfig); err != nil {
+			if err := SaveConfig(initArgs.ConfigFile, updatedConfig); err != nil {
 				return err
 			}
 
@@ -38,7 +40,11 @@ func configCmd() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVar(&configFile, "config-file", "config.yaml", "Path to configuration file")
+	cmd.Flags().BoolVarP(&initArgs.Debug, "debug", "d", false, "Enable debug mode")
+
+	cmd.Flags().StringVarP(&initArgs.EnvFile, "env-file", "e", "", "Path to .env file")
+	cmd.Flags().StringVar(&initArgs.ConfigFile, "config-file", "config.yaml", "Path to configuration file")
+
 	return cmd
 }
 

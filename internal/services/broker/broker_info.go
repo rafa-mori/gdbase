@@ -92,7 +92,7 @@ func GetBrokersPath() (string, error) {
 		}
 	}
 
-	brkDir = filepath.Join(brkDir, ".canalize", "gkbxsrv", "brokers")
+	brkDir = filepath.Join(brkDir, ".kubex", "gkbxsrv", "brokers")
 
 	if _, statErr := os.Stat(brkDir); statErr != nil {
 		if mkDirErr := os.MkdirAll(brkDir, 0755); mkDirErr != nil {

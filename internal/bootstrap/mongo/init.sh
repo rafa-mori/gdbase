@@ -3,16 +3,16 @@ set -euo pipefail
 
 : "${MONGO_INITDB_ROOT_USERNAME:=root}"
 : "${MONGO_INITDB_ROOT_PASSWORD:=example}"
-: "${MONGO_INITDB_DATABASE:=canalizeds}"
-: "${MONGO_APP_USER:=canalizeds}"
-: "${MONGO_APP_PASSWORD:=canalizeds_pass}"
+: "${MONGO_INITDB_DATABASE:=kubexds}"
+: "${MONGO_APP_USER:=kubexds}"
+: "${MONGO_APP_PASSWORD:=kubexds_pass}"
 
 echo "[init.sh] creating app user '${MONGO_APP_USER}' on db '${MONGO_INITDB_DATABASE}'..."
 
 cat >/tmp/init-app-user.js <<'JS'
-const dbName = process.env.MONGO_INITDB_DATABASE || "canalizeds";
-const appUser = process.env.MONGO_APP_USER || "canalizeds";
-const appPass = process.env.MONGO_APP_PASSWORD || "canalizeds_pass";
+const dbName = process.env.MONGO_INITDB_DATABASE || "kubexds";
+const appUser = process.env.MONGO_APP_USER || "kubexds";
+const appPass = process.env.MONGO_APP_PASSWORD || "kubexds_pass";
 
 const admin = db.getSiblingDB('admin');
 try {

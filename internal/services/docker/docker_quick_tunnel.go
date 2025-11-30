@@ -105,7 +105,7 @@ func StopQuickTunnel(ctx context.Context, cli *client.Client, h *QuickTunnelHand
 // cli, _ := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 
 // // Garantir que "pgadmin" e "cloudflared" estejam na mesma rede Docker.
-// h, err := StartQuickTunnel(ctx, cli, "CanalizeDS_net", "pgadmin", 80, 10*time.Second)
+// h, err := StartQuickTunnel(ctx, cli, "KubexDS_net", "pgadmin", 80, 10*time.Second)
 // if err != nil { /* lidar erro */ }
 // logz.Log("info", "Cloudflare Tunnel URL: "+h.PublicURL)
 

@@ -1,7 +1,7 @@
 \echo '🚀 ETAPA 8: Inserindo dados iniciais (seed)...'
 
 -- ============================================================================
--- CANALIZE PRM - Seed Data v1.0
+-- KUBEX PRM - Seed Data v1.0
 -- ============================================================================
 -- Dados iniciais para roles, permissions e org/tenant de exemplo
 -- Data: 2025-11-10
@@ -150,7 +150,7 @@ WHERE code LIKE '%.read';
 
 -- Org de exemplo
 INSERT INTO org (id, name) VALUES
-('10000000-0000-0000-0000-000000000001', 'Canalize Holding');
+('10000000-0000-0000-0000-000000000001', 'Kubex Holding');
 
 -- Tenant de exemplo (empresa de teste)
 INSERT INTO tenant (
@@ -166,9 +166,9 @@ INSERT INTO tenant (
 ) VALUES (
     '20000000-0000-0000-0000-000000000001',
     '10000000-0000-0000-0000-000000000001',
-    'Canalize Demo Corp',
-    'canalize-demo',
-    'demo.canalize.app',
+    'Kubex Demo Corp',
+    'kubex-demo',
+    'demo.kubex.app',
     'professional',
     true,
     false,
@@ -208,7 +208,7 @@ INSERT INTO "user" (
     created_at
 ) VALUES (
     '40000000-0000-0000-0000-000000000001',
-    'admin@canalize.demo',
+    'admin@kubex.demo',
     'Admin',
     'Demo',
     'active',
@@ -298,6 +298,6 @@ BEGIN
     RAISE NOTICE '   - % role-permission vinculadas', role_permission_count;
     RAISE NOTICE '   - 1 org de exemplo criada';
     RAISE NOTICE '   - 1 tenant de exemplo criado';
-    RAISE NOTICE '   - 1 usuário admin criado (admin@canalize.demo)';
+    RAISE NOTICE '   - 1 usuário admin criado (admin@kubex.demo)';
     RAISE NOTICE '   - 1 pipeline com 5 stages criado';
 END $$;

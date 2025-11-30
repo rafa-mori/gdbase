@@ -3,7 +3,7 @@ package cli
 import (
 	"fmt"
 
-	gl "github.com/kubex-ecosystem/logz"
+	logz "github.com/kubex-ecosystem/logz"
 )
 
 type IWebSrvServerStatus interface {
@@ -18,7 +18,7 @@ type WebSrvServerStatus struct {
 
 func (wss *WebSrvServerProcessData) FollowWebSrvServerStatus(interval int, follow bool, logs bool) error {
 	if interval < 1 {
-		gl.Log("error", "Interval must be greater than 0")
+		logz.Log("error", "Interval must be greater than 0")
 		return nil
 	}
 
@@ -44,7 +44,7 @@ func (wss *WebSrvServerProcessData) FollowWebSrvServerStatus(interval int, follo
 				if prcDataErr != nil {
 					return prcDataErr
 				}
-				gl.Log("info", fmt.Sprintf("Web Server Process Data - Ports: %v, Pub Address: %v, Auth Token: %v, Uptime: %v, Processes: %v", prcData.Ports, prcData.PubAddress, prcData.AuthToken, prcData.Uptime, prcData.Processes))
+				logz.Log("info", fmt.Sprintf("Web Server Process Data - Ports: %v, Pub Address: %v, Auth Token: %v, Uptime: %v, Processes: %v", prcData.Ports, prcData.PubAddress, prcData.AuthToken, prcData.Uptime, prcData.Processes))
 			}
 		}
 	}

@@ -1,9 +1,9 @@
 {
   "execution_timestamp": "2025-11-11T23:18:15-08:00",
-  "database_url": "postgres:***@localhost:5432/canalize_db?sslmode=disable",
+  "database_url": "postgres:***@localhost:5432/kubex_db?sslmode=disable",
   "total_duration_seconds": 1,
   "status": "success",
-  "log_file": "/ALL/CANALIZE/projects/DATABASE/canalize_ds/internal/bootstrap/embedded/logs/bootstrap_20251111_231814.log",
+  "log_file": "/ALL/KUBEX/projects/DATABASE/kubex_ds/internal/bootstrap/embedded/logs/bootstrap_20251111_231814.log",
   "steps_executed": 9,
   "manifest_version": "3.0.0",
   "schema_version": "hybrid-v1.0",

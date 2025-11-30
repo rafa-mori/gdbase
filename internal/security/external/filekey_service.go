@@ -43,7 +43,7 @@ func newFileKeyringService(service, name string) *FileKeyringService {
 	raw, _ := base64.StdEncoding.DecodeString(mk)
 	dir := os.Getenv("APP_SECRETS_DIR")
 	if dir == "" {
-		dir = "/var/lib/canalize/secrets"
+		dir = "/var/lib/kubex/secrets"
 	}
 	_ = os.MkdirAll(dir, 0o700)
 

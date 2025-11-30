@@ -15,7 +15,7 @@ import (
 )
 
 var (
-	KubexKeyringName = "canalize"
+	KubexKeyringName = "kubex"
 	KubexKeyringKey  string
 )
 
@@ -140,7 +140,7 @@ func StoreKeyringPassword(name string, pass []byte) (string, error) {
 	// Store the password in the keyring decoded to avoid storing the encoded password
 	// locally are much better for security keep binary static and encoded to handle with transport
 	// integration and other utilities
-	storeErr := NewKeyringService(kbx.KeyringService, fmt.Sprintf("canalizedb-%s", name)).StorePassword(string(decodedPass))
+	storeErr := NewKeyringService(kbx.KeyringService, fmt.Sprintf("kubexdb-%s", name)).StorePassword(string(decodedPass))
 	if storeErr != nil {
 		logz.Log("error", fmt.Sprintf("Error storing key: %v", storeErr))
 		return "", storeErr
@@ -154,7 +154,7 @@ func StoreKeyringPassword(name string, pass []byte) (string, error) {
 	}
 
 	// Return the encoded password to be used by the caller/logic outside this package
-	if err := NewKeyringService(kbx.KeyringService, fmt.Sprintf("canalizedb-%s", name)).StorePassword(encodedPass); err != nil {
+	if err := NewKeyringService(kbx.KeyringService, fmt.Sprintf("kubexdb-%s", name)).StorePassword(encodedPass); err != nil {
 		logz.Log("warn", fmt.Sprintf("Error persisting generated credential %s: %v", name, err))
 	}
 
@@ -165,7 +165,7 @@ func StoreKeyringPassword(name string, pass []byte) (string, error) {
 // If not found, it will generate a new one, store it and return the encoded password
 // This method is not exposed to the outside world, only accessible through the package main logic
 func GetOrGenerateFromKeyring(name string) (string, error) {
-	krPass, pgPassErr := NewKeyringService(kbx.KeyringService, fmt.Sprintf("canalizedb-%s", name)).RetrievePassword()
+	krPass, pgPassErr := NewKeyringService(kbx.KeyringService, fmt.Sprintf("kubexdb-%s", name)).RetrievePassword()
 	if pgPassErr != nil && pgPassErr != os.ErrNotExist {
 		return "", pgPassErr
 	}
@@ -183,7 +183,7 @@ func GetOrGenerateFromKeyring(name string) (string, error) {
 	}
 
 	encoded := crp.NewCryptoService().EncodeBase64([]byte(krPassKey))
-	if err := NewKeyringService(kbx.KeyringService, fmt.Sprintf("canalizedb-%s", name)).StorePassword(encoded); err != nil {
+	if err := NewKeyringService(kbx.KeyringService, fmt.Sprintf("kubexdb-%s", name)).StorePassword(encoded); err != nil {
 		logz.Log("warn", fmt.Sprintf("Error storing key locally: %v", err))
 	}
 

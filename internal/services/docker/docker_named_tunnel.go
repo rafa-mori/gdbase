@@ -58,7 +58,7 @@ func StopNamedTunnel(ctx context.Context, cli *client.Client, h *NamedTunnelHand
 // cli, _ := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
 
 // // Garanta que "pgadmin" e "cloudflared" estejam na mesma rede Docker (crie se necessário).
-// h, err := StartQuickTunnel(ctx, cli, "CanalizeDS_net", "pgadmin", 80, 10*time.Second)
+// h, err := StartQuickTunnel(ctx, cli, "KubexDS_net", "pgadmin", 80, 10*time.Second)
 // if err != nil { /* lidar erro */ }
 // fmt.Println("Acesse:", h.PublicURL)
 
