@@ -1,12 +1,9 @@
 package types
 
 import (
-	"fmt"
-
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
 	tu "github.com/kubex-ecosystem/gdbase/utils"
 	"github.com/kubex-ecosystem/logz"
-	l "github.com/kubex-ecosystem/logz"
 	gl "github.com/kubex-ecosystem/logz"
 
 	"reflect"
@@ -20,25 +17,25 @@ var (
 
 type ChannelBase[T any] struct {
 	*logz.LoggerZ              // Logger for this Channel instance
-	*Mutexes              // Mutexes for this Channel instance
-	Name     string       // The name of the channel.
-	Channel  any          // The channel for the value. Main channel for this struct.
-	Type     reflect.Type // The type of the channel.
-	Buffers  int          // The number of buffers for the channel.
-	Shared   interface{}  // Shared data for many purposes
+	*Mutexes                   // Mutexes for this Channel instance
+	Name          string       // The name of the channel.
+	Channel       any          // The channel for the value. Main channel for this struct.
+	Type          reflect.Type // The type of the channel.
+	Buffers       int          // The number of buffers for the channel.
+	Shared        interface{}  // Shared data for many purposes
 }
 
 // NewChannelBase creates a new ChannelBase instance with the provided name and type.
 func NewChannelBase[T any](name string, buffers int, logger *logz.LoggerZ) ci.IChannelBase[any] {
 	if logger == nil {
-		logger = l.GetLogger("GoLife")
+		logger = gl.GetLoggerZ("GoLife")
 	}
 	mu := NewMutexesType()
 	if buffers <= 0 {
 		buffers = lgBuf
 	}
 	return &ChannelBase[any]{
-		Logger:  logger,
+		LoggerZ: logger,
 		Mutexes: mu,
 		Name:    name,
 		Channel: make(chan T, buffers),
@@ -139,7 +136,7 @@ type ChannelCtl[T any] struct {
 // NewChannelCtl creates a new ChannelCtl instance with the provided name.
 func NewChannelCtl[T any](name string, logger *logz.LoggerZ) ci.IChannelCtl[T] {
 	if logger == nil {
-		logger = l.GetLogger("GoLife")
+		logger = gl.GetLoggerZ("GoLife")
 	}
 	ref := NewReference(name)
 	mu := NewMutexesType()
@@ -159,7 +156,7 @@ func NewChannelCtl[T any](name string, logger *logz.LoggerZ) ci.IChannelCtl[T] {
 // NewChannelCtlWithProperty creates a new ChannelCtl instance with the provided name and type.
 func NewChannelCtlWithProperty[T any, P ci.IProperty[T]](name string, buffers *int, property P, withMetrics bool, logger *logz.LoggerZ) ci.IChannelCtl[T] {
 	if logger == nil {
-		logger = l.GetLogger("GoLife")
+		logger = gl.GetLoggerZ("GoLife")
 	}
 	ref := NewReference(name)
 	mu := NewMutexesType()
@@ -229,7 +226,7 @@ func (cCtl *ChannelCtl[T]) SetSubChannels(channels map[string]interface{}) map[s
 }
 func (cCtl *ChannelCtl[T]) GetSubChannelByName(name string) (any, reflect.Type, bool) {
 	if cCtl.Channels == nil {
-		logz.Log("info", "Creating channels map for:", cCtl.Name, "ID:" cCtl.ID.String())
+		// logz.Log("info", "Creating channels map for:", cCtl.Name, "ID:" cCtl.ID.String())
 		cCtl.Channels = initChannelsMap(cCtl)
 	}
 	cCtl.MuRLock()
@@ -238,11 +235,11 @@ func (cCtl *ChannelCtl[T]) GetSubChannelByName(name string) (any, reflect.Type, 
 		if channel, ok := rawChannel.(ci.IChannelBase[T]); ok {
 			return channel, channel.GetType(), true
 		} else {
-			logz.Log("error", fmt.Sprintf("Channel %s is not a valid channel type. Expected: %s, receive %s", name, reflect.TypeFor[ci.IChannelBase[T]]().String() reflect.TypeOf(rawChannel)))
+			// logz.Log("error", fmt.Sprintf("Channel %s is not a valid channel type. Expected: %s, receive %s", name, reflect.TypeFor[ci.IChannelBase[T]]().String() reflect.TypeOf(rawChannel)))
 			return nil, nil, false
 		}
 	}
-	logz.Log("error", "Channel not found:", name, "ID:" cCtl.ID.String())
+	// logz.Log("error", "Channel not found:", name, "ID:" cCtl.ID.String())
 	return nil, nil, false
 }
 func (cCtl *ChannelCtl[T]) SetSubChannelByName(name string, channel any) (any, error) {
@@ -410,15 +407,15 @@ func initChannelsMap[T any](v *ChannelCtl[T]) map[string]interface{} {
 		logz.Log("ID:", v.ID.String())
 		v.Channels = make(map[string]interface{})
 		// done is a channel for the done signal.
-		v.Channels["done"] = NewChannelBase[bool]("done", smBuf, *logz.LoggerZ)
+		// v.Channels["done"] = NewChannelBase[bool]("done", smBuf, *logz.LoggerZ)
 		// ctl is a channel for the internal control channel.
-		v.Channels["ctl"] = NewChannelBase[string]("ctl", mdBuf, *logz.LoggerZ)
+		// v.Channels["ctl"] = NewChannelBase[string]("ctl", mdBuf, *logz.LoggerZ)
 		// condition is a channel for the condition signal.
-		v.Channels["condition"] = NewChannelBase[string]("cond", smBuf, *logz.LoggerZ)
+		// v.Channels["condition"] = NewChannelBase[string]("cond", smBuf, *logz.LoggerZ)
 
 		if v.withMetrics {
-			v.Channels["telemetry"] = NewChannelBase[string]("telemetry", mdBuf, *logz.LoggerZ)
-			v.Channels["monitor"] = NewChannelBase[string]("monitor", mdBuf, *logz.LoggerZ)
+			// v.Channels["telemetry"] = NewChannelBase[string]("telemetry", mdBuf, *logz.LoggerZ)
+			// v.Channels["monitor"] = NewChannelBase[string]("monitor", mdBuf, *logz.LoggerZ)
 		}
 	}
 	return v.Channels

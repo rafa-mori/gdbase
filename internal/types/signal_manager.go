@@ -8,7 +8,6 @@ import (
 
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
 	"github.com/kubex-ecosystem/logz"
-	l "github.com/kubex-ecosystem/logz"
 )
 
 type SignalManager[T chan string] struct {
@@ -24,7 +23,7 @@ type SignalManager[T chan string] struct {
 // NewSignalManager creates a new SignalManager instance.
 func newSignalManager[T chan string](channelCtl T, logger *logz.LoggerZ) *SignalManager[T] {
 	if logger == nil {
-		logger = l.GetLogger("GoLife")
+		logger = logz.GetLoggerZ("GoLife")
 	}
 	return &SignalManager[T]{
 		Logger:     logger,

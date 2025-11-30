@@ -9,8 +9,8 @@ import (
 
 	svc "github.com/kubex-ecosystem/gdbase/internal/services"
 	gl "github.com/kubex-ecosystem/logz"
-	l "github.com/kubex-ecosystem/logz"
-	xtt "github.com/kubex-ecosystem/xtui/types"
+
+	// // xtt "github.com/kubex-ecosystem/xtui/types"
 
 	"gorm.io/gorm"
 )
@@ -24,7 +24,7 @@ type IDiscordRepo interface {
 	Update(d IDiscordModel) (IDiscordModel, error)
 	Delete(id string) error
 	Close() error
-	List(where ...interface{}) (xtt.TableDataHandler, error)
+	// 	// List(where ...interface{}) (xtt.TableDataHandler, error)
 	GetContextDBService() *svc.DBServiceImpl
 }
 
@@ -145,40 +145,40 @@ func (dr *DiscordRepo) Close() error {
 	return sqlDB.Close()
 }
 
-func (dr *DiscordRepo) List(where ...interface{}) (xtt.TableDataHandler, error) {
-	var discords []DiscordModel
-	err := dr.g.Where(where[0], where[1:]...).Find(&discords).Error
-	if err != nil {
-		return nil, fmt.Errorf("DiscordModel repository: error listing Discord integrations: %w", err)
-	}
+// // func (dr *DiscordRepo) List(where ...interface{}) (xtt.TableDataHandler, error) {
+// var discords []DiscordModel
+// err := dr.g.Where(where[0], where[1:]...).Find(&discords).Error
+// if err != nil {
+// 	return nil, fmt.Errorf("DiscordModel repository: error listing Discord integrations: %w", err)
+// }
 
-	tableHandlerMap := make([][]string, 0)
-	for i, discord := range discords {
-		row := []string{
-			fmt.Sprintf("%d", i+1),
-			discord.GetID(),
-			discord.GetDiscordUserID(),
-			discord.GetUsername(),
-			discord.GetDisplayName(),
-			string(discord.GetUserType()),
-			string(discord.GetStatus()),
-			string(discord.GetIntegrationType()),
-			discord.GetGuildID(),
-			discord.GetChannelID(),
-			discord.GetCreatedAt().Format("2006-01-02 15:04:05"),
-			discord.GetUpdatedAt().Format("2006-01-02 15:04:05"),
-		}
-		tableHandlerMap = append(tableHandlerMap, row)
-	}
+// tableHandlerMap := make([][]string, 0)
+// for i, discord := range discords {
+// 	row := []string{
+// 		fmt.Sprintf("%d", i+1),
+// 		discord.GetID(),
+// 		discord.GetDiscordUserID(),
+// 		discord.GetUsername(),
+// 		discord.GetDisplayName(),
+// 		string(discord.GetUserType()),
+// 		string(discord.GetStatus()),
+// 		string(discord.GetIntegrationType()),
+// 		discord.GetGuildID(),
+// 		discord.GetChannelID(),
+// 		discord.GetCreatedAt().Format("2006-01-02 15:04:05"),
+// 		discord.GetUpdatedAt().Format("2006-01-02 15:04:05"),
+// 	}
+// 	tableHandlerMap = append(tableHandlerMap, row)
+// }
 
-	return xtt.NewTableHandlerFromRows([]string{
-		"#", "ID", "Discord User ID", "Username", "Display Name", "User Type",
-		"Status", "Integration Type", "Guild ID", "Channel ID", "Created At", "Updated At",
-	}, tableHandlerMap), nil
-}
+// return xtt.NewTableHandlerFromRows([]string{
+// 	"#", "ID", "Discord User ID", "Username", "Display Name", "User Type",
+// 	"Status", "Integration Type", "Guild ID", "Channel ID", "Created At", "Updated At",
+// }, tableHandlerMap), nil
+// }
 
 func (dr *DiscordRepo) GetContextDBService() *svc.DBServiceImpl {
-	dbService, dbServiceErr := svc.NewDatabaseService(context.Background(), svc.NewDBConfigWithDBConnection(dr.g), l.GetLogger("GdoBase"))
+	dbService, dbServiceErr := svc.NewDatabaseService(context.Background(), svc.NewDBConfigWithDBConnection(dr.g), gl.GetLoggerZ("GdoBase"))
 	if dbServiceErr != nil {
 		gl.Log("error", "DiscordModel repository: error creating database service: "+dbServiceErr.Error())
 		return nil

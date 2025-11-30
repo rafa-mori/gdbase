@@ -16,7 +16,6 @@ import (
 	gl "github.com/kubex-ecosystem/logz"
 
 	ti "github.com/kubex-ecosystem/gdbase/internal/types"
-	l "github.com/kubex-ecosystem/logz"
 	"gorm.io/gorm"
 )
 
@@ -109,7 +108,7 @@ type DBConfig struct {
 
 func newDBConfig(name, filePath string, enabled bool, logger *logz.LoggerZ, debug bool) *DBConfig {
 	if logger == nil {
-		logger = l.NewLogger("GDBase")
+		logger = gl.NewLogger("GDBase")
 	}
 
 	if debug {
@@ -226,7 +225,7 @@ func NewDBConfigWithArgs(ctx context.Context, name, filePath string, enabled boo
 }
 func NewDBConfig(dbConfig *DBConfig) *DBConfig {
 	if dbConfig.Logger == nil {
-		dbConfig.Logger = l.NewLogger("GDBase")
+		dbConfig.Logger = gl.NewLogger("GDBase")
 	}
 	if dbConfig.Name == "" {
 		dbConfig.Name = "default"
@@ -307,7 +306,7 @@ func (d *DBConfig) GetEnvironment() string {
 	}
 	var env *ti.Environment
 	if d.env == nil {
-		e, err := ti.NewEnvironmentType(kbx.GetEnvOrDefault("GDBASE_ENV_FILE", ".env"), d.IsConfidential, *logz.LoggerZ)
+		e, err := ti.NewEnvironmentType(kbx.GetEnvOrDefault("GDBASE_ENV_FILE", ".env"), d.IsConfidential, gl.GetLoggerZ("GDBase"))
 		if err != nil {
 			gl.Log("error", fmt.Sprintf("Error creating environment: %v", err))
 			return "development"

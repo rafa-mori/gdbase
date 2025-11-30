@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	svc "github.com/kubex-ecosystem/gdbase/internal/services"
 	gl "github.com/kubex-ecosystem/logz"
-	l "github.com/kubex-ecosystem/logz"
-	xtt "github.com/kubex-ecosystem/xtui/types"
+
+	// xtt "github.com/kubex-ecosystem/xtui/types"
 	"gorm.io/gorm"
 )
 
@@ -21,7 +21,7 @@ type ITasksRepo interface {
 	Update(task ITasksModel) (ITasksModel, error)
 	Delete(id string) error
 	Close() error
-	List(where ...any) (xtt.TableDataHandler, error)
+	// 	List(where ...any) (xtt.TableDataHandler, error)
 	GetContextDBService() *svc.DBServiceImpl
 }
 
@@ -157,43 +157,43 @@ func (tr *TasksRepo) Close() error {
 	return sqlDB.Close()
 }
 
-func (tr *TasksRepo) List(where ...any) (xtt.TableDataHandler, error) {
-	var tasks []TasksModel
-	err := tr.g.Where(where[0], where[1:]...).Find(&tasks).Error
-	if err != nil {
-		return nil, fmt.Errorf("TasksModel repository: failed to list tasks: %w", err)
-	}
-	tableHandlerMap := make([][]string, 0)
-	for i, task := range tasks {
-		nextRun := "N/A"
-		if task.TaskNextRun != nil {
-			nextRun = task.TaskNextRun.Format("2006-01-02 15:04:05")
-		}
-		lastRun := "Never"
-		if task.TaskLastRun != nil {
-			lastRun = task.TaskLastRun.Format("2006-01-02 15:04:05")
-		}
+// func (tr *TasksRepo) List(where ...any) (xtt.TableDataHandler, error) {
+// var tasks []TasksModel
+// err := tr.g.Where(where[0], where[1:]...).Find(&tasks).Error
+// if err != nil {
+// 	return nil, fmt.Errorf("TasksModel repository: failed to list tasks: %w", err)
+// }
+// tableHandlerMap := make([][]string, 0)
+// for i, task := range tasks {
+// 	nextRun := "N/A"
+// 	if task.TaskNextRun != nil {
+// 		nextRun = task.TaskNextRun.Format("2006-01-02 15:04:05")
+// 	}
+// 	lastRun := "Never"
+// 	if task.TaskLastRun != nil {
+// 		lastRun = task.TaskLastRun.Format("2006-01-02 15:04:05")
+// 	}
 
-		tableHandlerMap = append(tableHandlerMap, []string{
-			fmt.Sprintf("%d", i+1),
-			task.GetID(),
-			task.GetMCPProvider(),
-			task.GetTargetTask(),
-			string(task.GetTaskType()),
-			task.GetTaskExpression(),
-			string(task.TaskStatus),
-			fmt.Sprintf("%t", task.GetActive()),
-			nextRun,
-			lastRun,
-			task.TaskLastRunStatus,
-		})
-	}
+// 	tableHandlerMap = append(tableHandlerMap, []string{
+// 		fmt.Sprintf("%d", i+1),
+// 		task.GetID(),
+// 		task.GetMCPProvider(),
+// 		task.GetTargetTask(),
+// 		string(task.GetTaskType()),
+// 		task.GetTaskExpression(),
+// 		string(task.TaskStatus),
+// 		fmt.Sprintf("%t", task.GetActive()),
+// 		nextRun,
+// 		lastRun,
+// 		task.TaskLastRunStatus,
+// 	})
+// }
 
-	return xtt.NewTableHandlerFromRows([]string{"#", "ID", "Provider", "Target", "Type", "Cron", "Status", "Active", "Next Run", "Last Run", "Last Status"}, tableHandlerMap), nil
-}
+// 	return xtt.NewTableHandlerFromRows([]string{"#", "ID", "Provider", "Target", "Type", "Cron", "Status", "Active", "Next Run", "Last Run", "Last Status"}, tableHandlerMap), nil
+// }
 
 func (tr *TasksRepo) GetContextDBService() *svc.DBServiceImpl {
-	dbService, dbServiceErr := svc.NewDatabaseService(context.Background(), svc.NewDBConfigWithDBConnection(tr.g), l.GetLogger("GdoBase"))
+	dbService, dbServiceErr := svc.NewDatabaseService(context.Background(), svc.NewDBConfigWithDBConnection(tr.g), gl.GetLoggerZ("GdoBase"))
 	if dbServiceErr != nil {
 		gl.Log("error", fmt.Sprintf("TasksModel repository: failed to get context DB service: %v", dbServiceErr))
 		return nil

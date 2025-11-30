@@ -12,7 +12,6 @@ import (
 	svc "github.com/kubex-ecosystem/gdbase/internal/services"
 	tp "github.com/kubex-ecosystem/gdbase/internal/types"
 	gl "github.com/kubex-ecosystem/logz"
-	l "github.com/kubex-ecosystem/logz"
 
 	_ "gorm.io/driver/mysql"
 	_ "gorm.io/driver/postgres"
@@ -128,7 +127,7 @@ func initDB() (*gorm.DB, *sql.DB, error) {
 
 	// Initialize database
 	// Create database service
-	dbService, err := svc.NewDatabaseService(context.Background(), dbConfig, l.GetLogger("gen_models"))
+	dbService, err := svc.NewDatabaseService(context.Background(), dbConfig, gl.GetLoggerZ("gen_models"))
 	if err != nil {
 		gl.Log("fatal", fmt.Sprintf("Error creating database service: %v", err))
 		return nil, nil, err

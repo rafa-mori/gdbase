@@ -6,7 +6,6 @@ import (
 
 	"github.com/google/uuid"
 	t "github.com/kubex-ecosystem/gdbase/internal/types"
-	l "github.com/kubex-ecosystem/logz"
 
 	jobqueue "github.com/kubex-ecosystem/gdbase/internal/models/job_queue"
 
@@ -79,7 +78,7 @@ func NewCronJob(ctx context.Context, cron *CronJob, restrict bool) ICronJobModel
 	if cron == nil {
 		cron = &CronJob{}
 	}
-	cv := NewCronModelValidation(ctx, l.GetLogger(""), false)
+	cv := NewCronModelValidation(ctx, gl.GetLoggerZ(""), false)
 	cronV, err := cv.ValidateCronJobProperties(ctx, cron, restrict)
 	if err != nil {
 		gl.Log("error", "Failed to validate cron job properties")

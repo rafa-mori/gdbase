@@ -22,7 +22,6 @@ import (
 	it "github.com/kubex-ecosystem/gdbase/internal/types"
 	"github.com/kubex-ecosystem/logz"
 	gl "github.com/kubex-ecosystem/logz"
-	l "github.com/kubex-ecosystem/logz"
 
 	_ "embed"
 )
@@ -93,7 +92,7 @@ func newDockerServiceBus(config *DBConfig, logger *logz.LoggerZ) (IDockerService
 	EnsureDockerIsRunning()
 
 	if logger == nil {
-		logger = l.GetLogger("DockerService")
+		logger = gl.GetLoggerZ("DockerService")
 	}
 
 	var propDBConfig ci.IProperty[*DBConfig]

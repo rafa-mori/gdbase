@@ -19,7 +19,6 @@ import (
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
 	ti "github.com/kubex-ecosystem/gdbase/internal/types"
 	gl "github.com/kubex-ecosystem/logz"
-	l "github.com/kubex-ecosystem/logz"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlite"
@@ -68,7 +67,7 @@ type DBServiceImpl struct {
 
 func NewDatabaseServiceImpl(_ context.Context, config *DBConfig, logger *logz.LoggerZ) (*DBServiceImpl, error) {
 	if logger == nil {
-		logger = l.GetLogger("GDBase")
+		logger = gl.GetLoggerZ("GDBase")
 	}
 
 	if config == nil {

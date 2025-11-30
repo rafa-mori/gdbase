@@ -8,8 +8,8 @@ import (
 
 	is "github.com/kubex-ecosystem/gdbase/internal/services"
 	gl "github.com/kubex-ecosystem/logz"
-	l "github.com/kubex-ecosystem/logz"
-	xtt "github.com/kubex-ecosystem/xtui/types"
+
+	// xtt "github.com/kubex-ecosystem/xtui/types"
 
 	"gorm.io/gorm"
 )
@@ -23,7 +23,7 @@ type ILLMRepo interface {
 	Update(m ILLMModel) (ILLMModel, error)
 	Delete(id string) error
 	Close() error
-	List(where ...interface{}) (xtt.TableDataHandler, error)
+// 	List(where ...interface{}) (xtt.TableDataHandler, error)
 	GetContextDBService() is.DBService
 }
 
@@ -141,31 +141,31 @@ func (lr *LLMRepo) Close() error {
 	return sqlDB.Close()
 }
 
-func (lr *LLMRepo) List(where ...interface{}) (xtt.TableDataHandler, error) {
-	var models []LLMModel
-	err := lr.g.Where(where[0], where[1:]...).Find(&models).Error
-	if err != nil {
-		return nil, fmt.Errorf("LLMModel repository: failed to list LLM models: %w", err)
-	}
-	tableHandlerMap := make([][]string, 0)
-	for i, model := range models {
-		tableHandlerMap = append(tableHandlerMap, []string{
-			fmt.Sprintf("%d", i+1),
-			model.GetID(),
-			model.GetProvider(),
-			model.GetModel(),
-			fmt.Sprintf("%.2f", model.GetTemperature()),
-			fmt.Sprintf("%d", model.GetMaxTokens()),
-			fmt.Sprintf("%.2f", model.GetTopP()),
-			fmt.Sprintf("%t", model.Enabled),
-		})
-	}
+// func (lr *LLMRepo) List(where ...interface{}) (xtt.TableDataHandler, error) {
+// 	var models []LLMModel
+// 	err := lr.g.Where(where[0], where[1:]...).Find(&models).Error
+// 	if err != nil {
+// 		return nil, fmt.Errorf("LLMModel repository: failed to list LLM models: %w", err)
+// 	}
+// 	tableHandlerMap := make([][]string, 0)
+// 	for i, model := range models {
+// 		tableHandlerMap = append(tableHandlerMap, []string{
+// 			fmt.Sprintf("%d", i+1),
+// 			model.GetID(),
+// 			model.GetProvider(),
+// 			model.GetModel(),
+// 			fmt.Sprintf("%.2f", model.GetTemperature()),
+// 			fmt.Sprintf("%d", model.GetMaxTokens()),
+// 			fmt.Sprintf("%.2f", model.GetTopP()),
+// 			fmt.Sprintf("%t", model.Enabled),
+// 		})
+// 	}
 
-	return xtt.NewTableHandlerFromRows([]string{"#", "ID", "Provider", "Model", "Temperature", "Max Tokens", "Top P", "Enabled"}, tableHandlerMap), nil
-}
+// 	return xtt.NewTableHandlerFromRows([]string{"#", "ID", "Provider", "Model", "Temperature", "Max Tokens", "Top P", "Enabled"}, tableHandlerMap), nil
+// }
 
 func (lr *LLMRepo) GetContextDBService() is.DBService {
-	dbService, dbServiceErr := is.NewDatabaseService(context.Background(), is.NewDBConfigWithDBConnection(lr.g), l.GetLogger("GdoBase"))
+	dbService, dbServiceErr := is.NewDatabaseService(context.Background(), is.NewDBConfigWithDBConnection(lr.g), gl.GetLoggerZ("GdoBase"))
 	if dbServiceErr != nil {
 		gl.Log("error", fmt.Sprintf("LLMModel repository: failed to get context DB service: %v", dbServiceErr))
 		return nil

@@ -9,8 +9,8 @@ import (
 	svc "github.com/kubex-ecosystem/gdbase/internal/services"
 	t "github.com/kubex-ecosystem/gdbase/types"
 	gl "github.com/kubex-ecosystem/logz"
-	l "github.com/kubex-ecosystem/logz"
-	xtt "github.com/kubex-ecosystem/xtui/types"
+
+	// xtt "github.com/kubex-ecosystem/xtui/types"
 
 	"gorm.io/gorm"
 )
@@ -24,7 +24,7 @@ type IPreferencesRepo interface {
 	Update(p IPreferencesModel) (IPreferencesModel, error)
 	Delete(id string) error
 	Close() error
-	List(where ...interface{}) (xtt.TableDataHandler, error)
+	// 	List(where ...interface{}) (xtt.TableDataHandler, error)
 	GetContextDBService() *t.DBServiceImpl
 }
 
@@ -147,33 +147,33 @@ func (pr *PreferencesRepo) Close() error {
 	return sqlDB.Close()
 }
 
-func (pr *PreferencesRepo) List(where ...interface{}) (xtt.TableDataHandler, error) {
-	var preferences []PreferencesModel
-	err := pr.g.Where(where[0], where[1:]...).Find(&preferences).Error
-	if err != nil {
-		return nil, fmt.Errorf("PreferencesModel repository: failed to list preferences: %w", err)
-	}
-	tableHandlerMap := make([][]string, 0)
-	for i, pref := range preferences {
-		configSize := "0"
-		if pref.Config != nil {
-			configSize = fmt.Sprintf("%d", len(pref.Config))
-		}
-		tableHandlerMap = append(tableHandlerMap, []string{
-			fmt.Sprintf("%d", i+1),
-			pref.GetID(),
-			pref.GetScope(),
-			configSize + " bytes",
-			pref.GetCreatedAt().Format("2006-01-02 15:04:05"),
-			pref.GetUpdatedAt().Format("2006-01-02 15:04:05"),
-		})
-	}
+// func (pr *PreferencesRepo) List(where ...interface{}) (xtt.TableDataHandler, error) {
+// 	var preferences []PreferencesModel
+// 	err := pr.g.Where(where[0], where[1:]...).Find(&preferences).Error
+// 	if err != nil {
+// 		return nil, fmt.Errorf("PreferencesModel repository: failed to list preferences: %w", err)
+// 	}
+// 	tableHandlerMap := make([][]string, 0)
+// 	for i, pref := range preferences {
+// 		configSize := "0"
+// 		if pref.Config != nil {
+// 			configSize = fmt.Sprintf("%d", len(pref.Config))
+// 		}
+// 		tableHandlerMap = append(tableHandlerMap, []string{
+// 			fmt.Sprintf("%d", i+1),
+// 			pref.GetID(),
+// 			pref.GetScope(),
+// 			configSize + " bytes",
+// 			pref.GetCreatedAt().Format("2006-01-02 15:04:05"),
+// 			pref.GetUpdatedAt().Format("2006-01-02 15:04:05"),
+// 		})
+// 	}
 
-	return xtt.NewTableHandlerFromRows([]string{"#", "ID", "Scope", "Config Size", "Created At", "Updated At"}, tableHandlerMap), nil
-}
+// 	return xtt.NewTableHandlerFromRows([]string{"#", "ID", "Scope", "Config Size", "Created At", "Updated At"}, tableHandlerMap), nil
+// }
 
 func (pr *PreferencesRepo) GetContextDBService() *t.DBServiceImpl {
-	dbService, dbServiceErr := svc.NewDatabaseService(context.Background(), svc.NewDBConfigWithDBConnection(pr.g), l.GetLogger("GdoBase"))
+	dbService, dbServiceErr := svc.NewDatabaseService(context.Background(), svc.NewDBConfigWithDBConnection(pr.g), gl.GetLoggerZ("GdoBase"))
 	if dbServiceErr != nil {
 		gl.Log("error", fmt.Sprintf("PreferencesModel repository: failed to get context DB service: %v", dbServiceErr))
 		return nil

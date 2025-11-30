@@ -10,7 +10,7 @@
   "repository": "https://github.com/kubex-ecosystem/gdbase",
   "homepage": "https://github.com/kubex-ecosystem/gdbase",
   "description": "Kubex GDBase: A complete tool for managing databases, data models, and more.",
-  "go_version": "1.25.3",
+  "go_version": "1.25.4",
   "main": "cmd/main.go",
   "bin": "gdbase",
   "author": "Rafael Mori <faelmori@gmail.com>",

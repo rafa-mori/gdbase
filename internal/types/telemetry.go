@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/kubex-ecosystem/logz"
-	l "github.com/kubex-ecosystem/logz"
 )
 
 // TelemetryIdentifier is a struct that holds the identifier for telemetry data
@@ -96,11 +95,11 @@ func NewTelemetry() *Telemetry {
 		TelemetryIdentifier: TelemetryIdentifier{
 			ID:     "default",
 			Name:   "default",
-			Logger: l.GetLogger("Telemetry"),
+			Logger: logz.GetLoggerZ("Telemetry"),
 			Type:   "default",
 		},
 		TelemetryLogger: TelemetryLogger{
-			logger: l.GetLogger("Telemetry"),
+			logger: logz.GetLoggerZ("Telemetry"),
 		},
 		TelemetryData: TelemetryData{
 			LastUpdated: time.Now(),

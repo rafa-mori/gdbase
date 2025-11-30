@@ -7,7 +7,6 @@ import (
 
 	"github.com/kubex-ecosystem/gdbase/factory/models"
 	svc "github.com/kubex-ecosystem/gdbase/internal/services"
-	l "github.com/kubex-ecosystem/logz"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -65,7 +64,7 @@ func setupDatabase() (*svc.DBServiceImpl, error) {
 	dbService, err := svc.NewDatabaseService(
 		context.Background(),
 		&svc.DBConfig{},
-		l.GetLogger("bot_models_example"),
+		gl.GetLoggerZ("bot_models_example"),
 	)
 	if err != nil {
 		log.Fatal("❌ Failed to create database service:", err)

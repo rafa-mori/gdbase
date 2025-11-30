@@ -13,7 +13,6 @@ import (
 	t "github.com/kubex-ecosystem/gdbase/internal/types"
 	"github.com/kubex-ecosystem/logz"
 	gl "github.com/kubex-ecosystem/logz"
-	l "github.com/kubex-ecosystem/logz"
 )
 
 type ICronJobValidation interface {
@@ -28,10 +27,10 @@ type CronModelValidation struct {
 
 func NewCronModelValidation(ctx context.Context, logger *logz.LoggerZ, debug bool) ICronJobValidation {
 	if logger == nil {
-		logger = l.GetLogger("CronModelValidation")
+		logger = gl.GetLoggerZ("CronModelValidation")
 	}
 	if debug {
-		gl.SetDebug(true)
+		gl.SetDebugMode(true)
 	}
 	return &CronModelValidation{
 		Mutexes: t.NewMutexesType(),

@@ -24,7 +24,6 @@ import (
 	sci "github.com/kubex-ecosystem/gdbase/internal/security/interfaces"
 	"github.com/kubex-ecosystem/logz"
 	gl "github.com/kubex-ecosystem/logz"
-	l "github.com/kubex-ecosystem/logz"
 )
 
 var envCache *EnvCache = NewEnvCache()
@@ -68,7 +67,7 @@ type Environment struct {
 
 func newEnvironment(envFile string, isConfidential bool, logger *logz.LoggerZ) (*Environment, error) {
 	if logger == nil {
-		logger = l.GetLogger("Environment")
+		logger = gl.GetLoggerZ("Environment")
 	}
 	if envFile == "" {
 		envFile = ".env"

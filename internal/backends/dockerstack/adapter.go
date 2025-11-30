@@ -25,7 +25,7 @@ type DockerStackProvider struct {
 // NewDockerStackProvider creates a new Docker-based provider
 func NewDockerStackProvider() *DockerStackProvider {
 	return &DockerStackProvider{
-		logger: gl.GetLogger("DockerStackProvider"),
+		logger: gl.GetLoggerZ("DockerStackProvider"),
 	}
 }
 

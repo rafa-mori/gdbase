@@ -7,8 +7,8 @@ import (
 	"github.com/google/uuid"
 	svc "github.com/kubex-ecosystem/gdbase/internal/services"
 	gl "github.com/kubex-ecosystem/logz"
-	l "github.com/kubex-ecosystem/logz"
-	xtt "github.com/kubex-ecosystem/xtui/types"
+
+	// xtt "github.com/kubex-ecosystem/xtui/types"
 	"gorm.io/gorm"
 )
 
@@ -21,7 +21,7 @@ type IUserRepo interface {
 	Update(u IUser) (IUser, error)
 	Delete(id string) error
 	Close() error
-	List(where ...interface{}) (xtt.TableDataHandler, error)
+	// 	List(where ...interface{}) (xtt.TableDataHandler, error)
 	GetContextDBService() *svc.DBServiceImpl
 }
 
@@ -120,29 +120,30 @@ func (ur *UserRepo) Close() error {
 	}
 	return sqlDB.Close()
 }
-func (ur *UserRepo) List(where ...interface{}) (xtt.TableDataHandler, error) {
-	var users []UserModel
-	err := ur.g.Where(where[0], where[1:]...).Find(&users).Error
-	if err != nil {
-		return nil, fmt.Errorf("UserModel repository: failed to list users: %w", err)
-	}
-	tableHandlerMap := make([][]string, 0)
-	for i, usr := range users {
-		tableHandlerMap = append(tableHandlerMap, []string{
-			fmt.Sprintf("%d", i+1),
-			usr.GetID(),
-			usr.GetName(),
-			usr.GetUsername(),
-			usr.GetEmail(),
-			usr.GetPhone(),
-			fmt.Sprintf("%t", usr.GetActive()),
-		})
-	}
 
-	return xtt.NewTableHandlerFromRows([]string{"#", "ID", "Name", "Username", "Email", "Phone", "Active"}, tableHandlerMap), nil
-}
+// func (ur *UserRepo) List(where ...interface{}) (xtt.TableDataHandler, error) {
+// var users []UserModel
+// err := ur.g.Where(where[0], where[1:]...).Find(&users).Error
+// if err != nil {
+// 	return nil, fmt.Errorf("UserModel repository: failed to list users: %w", err)
+// }
+// tableHandlerMap := make([][]string, 0)
+// for i, usr := range users {
+// 	tableHandlerMap = append(tableHandlerMap, []string{
+// 		fmt.Sprintf("%d", i+1),
+// 		usr.GetID(),
+// 		usr.GetName(),
+// 		usr.GetUsername(),
+// 		usr.GetEmail(),
+// 		usr.GetPhone(),
+// 		fmt.Sprintf("%t", usr.GetActive()),
+// 	})
+// }
+
+//		return xtt.NewTableHandlerFromRows([]string{"#", "ID", "Name", "Username", "Email", "Phone", "Active"}, tableHandlerMap), nil
+//	}
 func (ur *UserRepo) GetContextDBService() *svc.DBServiceImpl {
-	dbService, dbServiceErr := svc.NewDatabaseService(context.Background(), svc.NewDBConfigWithDBConnection(ur.g), l.GetLogger("GDBase"))
+	dbService, dbServiceErr := svc.NewDatabaseService(context.Background(), svc.NewDBConfigWithDBConnection(ur.g), gl.GetLoggerZ("GDBase"))
 	if dbServiceErr != nil {
 		gl.Log("error", fmt.Sprintf("UserModel repository: failed to get context DB service (%s)", dbServiceErr))
 		return nil
