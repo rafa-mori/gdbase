@@ -5,6 +5,7 @@ import (
 	"context"
 
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
+	"github.com/kubex-ecosystem/gdbase/internal/module/kbx"
 	svc "github.com/kubex-ecosystem/gdbase/internal/services"
 	t "github.com/kubex-ecosystem/gdbase/internal/types"
 	"github.com/kubex-ecosystem/logz"
@@ -19,15 +20,16 @@ type IDBService interface{ svc.DBService }
 type DBServiceImpl = svc.DBServiceImpl
 type DBService = svc.DBService
 
-type IDockerService = svc.IDockerService
-type DockerService = svc.DockerService
+type IDockerService = ci.IDockerService
+type DockerService = svc.Services
 
 func NewDatabaseService(ctx context.Context, config *svc.DBConfig, logger *logz.LoggerZ) (svc.DBService, error) {
 	return svc.NewDatabaseService(ctx, config, logger)
 }
 
-func SetupDatabaseServices(ctx context.Context, d svc.IDockerService, config *svc.DBConfig) error {
-	return svc.SetupDatabaseServices(ctx, d, config)
+func SetupDatabaseServices(ctx context.Context, d ci.IDockerService, config *kbx.RootConfig) error {
+	// return svc.
+	return d.InitializeWithConfig(ctx, config)
 }
 
 func NewDBConfigWithArgs(ctx context.Context, dbName, dbConfigFilePath string, autoMigrate bool, logger *logz.LoggerZ, debug bool) *svc.DBConfig {

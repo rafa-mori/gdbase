@@ -1,0 +1,23 @@
+[Unit]
+Description=Kubex Module Service: {{MODULE_NAME}}
+After=network-online.target
+Wants=network-online.target
+
+Environment="APP_NAME={{MODULE_NAME}}"
+Environment="BIN={{MODULE_BIN}}"
+Environment="DEFAULT_CONFIG={{MODULE_CONFIG}}"
+
+[Service]
+Type=simple
+User={{SERVICE_USER}}
+Group={{SERVICE_USER}}
+ExecStart={{WRAPPER_PATH}} {{MODULE_DEFAULT_CMD}}
+
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=yes
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

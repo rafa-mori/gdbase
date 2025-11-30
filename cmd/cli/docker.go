@@ -1,12 +1,10 @@
 package cli
 
 import (
-	"context"
 	"fmt"
 	"os"
 
 	"github.com/kubex-ecosystem/gdbase/factory"
-	s "github.com/kubex-ecosystem/gdbase/internal/services"
 	gl "github.com/kubex-ecosystem/logz"
 	"github.com/spf13/cobra"
 )
@@ -60,7 +58,7 @@ func startDockerCmd() *cobra.Command {
 		Long:        longDesc,
 		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("GDBASE_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			dkr, dkrErr := factory.NewDockerService(nil, gl.GetLoggerZ("GDBase"))
+			dkr, dkrErr := factory.NewDockerService(gl.GetLoggerZ("GDBase"))
 			if dkrErr != nil {
 				fmt.Printf("Error starting Docker service: %v\n", dkrErr)
 				return
@@ -70,11 +68,11 @@ func startDockerCmd() *cobra.Command {
 				fmt.Printf("Error initializing Docker service: %v\n", dkrErr)
 				return
 			}
-			dkrErr = s.SetupDatabaseServices(context.Background(), dkr, nil)
-			if dkrErr != nil {
-				gl.Log("error", fmt.Sprintf("Error setting up database services: %v", dkrErr))
-				return
-			}
+			// dkrErr = s.SetupDatabaseServices(context.Background(), dkr, nil)
+			// if dkrErr != nil {
+			// 	gl.Log("error", fmt.Sprintf("Error setting up database services: %v", dkrErr))
+			// 	return
+			// }
 		},
 	}
 	return cmd
@@ -145,7 +143,7 @@ func restartDockerCmd() *cobra.Command {
 		Long:        longDesc,
 		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("GDBASE_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			dkr, dkrErr := factory.NewDockerService(nil, gl.GetLoggerZ("GDBase"))
+			dkr, dkrErr := factory.NewDockerService(gl.GetLoggerZ("GDBase"))
 			if dkrErr != nil {
 				fmt.Printf("Error restarting Docker service: %v\n", dkrErr)
 				return
@@ -155,11 +153,11 @@ func restartDockerCmd() *cobra.Command {
 				fmt.Printf("Error initializing Docker service: %v\n", dkrErr)
 				return
 			}
-			dkrErr = s.SetupDatabaseServices(context.Background(), dkr, nil)
-			if dkrErr != nil {
-				gl.Log("error", fmt.Sprintf("Error setting up database services: %v", dkrErr))
-				return
-			}
+			// dkrErr = s.SetupDatabaseServices(context.Background(), dkr, nil)
+			// if dkrErr != nil {
+			// 	gl.Log("error", fmt.Sprintf("Error setting up database services: %v", dkrErr))
+			// 	return
+			// }
 		},
 	}
 	return cmd
@@ -285,7 +283,7 @@ func getVolumesListCmd() *cobra.Command {
 		Long:        longDesc,
 		Annotations: GetDescriptions([]string{shortDesc, longDesc}, (os.Getenv("GDBASE_HIDEBANNER") == "true")),
 		Run: func(cmd *cobra.Command, args []string) {
-			dkr, dkrErr := factory.NewDockerService(nil, gl.GetLoggerZ("GDBase"))
+			dkr, dkrErr := factory.NewDockerService(gl.GetLoggerZ("GDBase"))
 			if dkrErr != nil {
 				fmt.Printf("Error getting volumes list: %v\n", dkrErr)
 				return

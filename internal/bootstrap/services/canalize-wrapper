@@ -1,0 +1,24 @@
+#!/bin/sh
+# kubex universal wrapper — POSIX, portable, argument-friendly
+
+set -eu
+
+APP_NAME="${APP_NAME:-kubex-module}"
+BIN="${BIN:-/usr/local/bin/${APP_NAME}}"
+DEFAULT_CONFIG="${DEFAULT_CONFIG:-}"
+
+log() { printf "[%s] %s\n" "$APP_NAME" "$*"; }
+
+# bin check
+[ -x "$BIN" ] || { log "ERRO: binário não encontrado: $BIN"; exit 1; }
+
+log "Iniciando serviço…"
+log "Args recebidos: $*"
+
+# fallback para config default se existir
+if [ $# -eq 0 ] && [ -n "$DEFAULT_CONFIG" ] && [ -f "$DEFAULT_CONFIG" ]; then
+    log "Usando config padrão: $DEFAULT_CONFIG"
+    exec "$BIN" --config "$DEFAULT_CONFIG"
+fi
+
+exec "$BIN" "$@"

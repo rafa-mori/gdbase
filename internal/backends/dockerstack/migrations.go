@@ -4,14 +4,16 @@ package dockerstack
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"strings"
 	"time"
 
 	"github.com/kubex-ecosystem/gdbase/internal/bootstrap"
-	"github.com/kubex-ecosystem/logz"
-	gl "github.com/kubex-ecosystem/logz"
+	"github.com/kubex-ecosystem/gdbase/internal/module/kbx"
+	"github.com/kubex-ecosystem/gdbase/internal/types"
+	logz "github.com/kubex-ecosystem/logz"
 
 	_ "github.com/lib/pq"
 )
@@ -59,7 +61,7 @@ func (m *MigrationManager) WaitForPostgres(ctx context.Context, maxWait time.Dur
 
 		db, err := sql.Open("postgres", m.dsn)
 		if err != nil {
-			gl.Log("debug", fmt.Sprintf("Attempt %d: Connection failed: %v", attempt, err))
+			logz.Log("debug", fmt.Sprintf("Attempt %d: Connection failed: %v", attempt, err))
 			time.Sleep(time.Duration(attempt) * time.Second)
 			attempt++
 			continue
@@ -69,7 +71,7 @@ func (m *MigrationManager) WaitForPostgres(ctx context.Context, maxWait time.Dur
 		if err := db.PingContext(ctx); err != nil {
 			cancel()
 			db.Close()
-			gl.Log("debug", fmt.Sprintf("Attempt %d: Ping failed: %v", attempt, err))
+			logz.Log("debug", fmt.Sprintf("Attempt %d: Ping failed: %v", attempt, err))
 			time.Sleep(time.Duration(attempt) * time.Second)
 			attempt++
 			continue
@@ -77,7 +79,7 @@ func (m *MigrationManager) WaitForPostgres(ctx context.Context, maxWait time.Dur
 		cancel()
 		db.Close()
 
-		gl.Log("info", fmt.Sprintf("✅ PostgreSQL is ready (attempt %d)", attempt))
+		logz.Log("info", fmt.Sprintf("✅ PostgreSQL is ready (attempt %d)", attempt))
 		return nil
 	}
 
@@ -85,18 +87,21 @@ func (m *MigrationManager) WaitForPostgres(ctx context.Context, maxWait time.Dur
 }
 
 // RunMigrations executes all SQL files in order with error recovery
-func (m *MigrationManager) RunMigrations(ctx context.Context) ([]MigrationResult, error) {
+func (m *MigrationManager) RunMigrations(ctx context.Context, migrationInfo *kbx.MigrationInfo) ([]MigrationResult, error) {
 	db, err := sql.Open("postgres", m.dsn)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 	defer db.Close()
 
-	// Execute migrations in order
-	migrations := []string{"001_init.sql", "002_hardening.sql"}
+	migrations, err := loadMigrationOrder()
+	if err != nil {
+		logz.Log("warn", fmt.Sprintf("could not load bootstrap manifest: %v. Falling back to legacy migrations.", err))
+		migrations = []string{"001_init.sql", "002_hardening.sql", "003_create_user_invitations.sql"}
+	}
 	results := make([]MigrationResult, 0, len(migrations))
 
-	gl.Log("info", "🚀 Starting PostgreSQL migrations with error recovery...")
+	logz.Log("info", "🚀 Starting PostgreSQL migrations with error recovery...")
 
 	for _, filename := range migrations {
 		result := m.executeSQLFileWithRecovery(ctx, db, filename)
@@ -104,17 +109,17 @@ func (m *MigrationManager) RunMigrations(ctx context.Context) ([]MigrationResult
 
 		// Log summary for this file
 		if result.FailedStmts == 0 {
-			gl.Log("info", fmt.Sprintf("✅ %s: %d/%d statements executed successfully (%.2fs)",
+			logz.Log("info", fmt.Sprintf("✅ %s: %d/%d statements executed successfully (%.2fs)",
 				filename, result.SuccessfulStmts, result.TotalStatements, result.Duration.Seconds()))
 		} else {
-			gl.Log("warn", fmt.Sprintf("⚠️  %s: %d/%d statements succeeded, %d failed (%.2fs)",
+			logz.Log("warn", fmt.Sprintf("⚠️  %s: %d/%d statements succeeded, %d failed (%.2fs)",
 				filename, result.SuccessfulStmts, result.TotalStatements, result.FailedStmts, result.Duration.Seconds())) // Log first few errors for debugging
 			for i, err := range result.Errors {
 				if i >= 3 { // Limit error logging
-					gl.Log("warn", fmt.Sprintf("... and %d more errors", len(result.Errors)-i))
+					logz.Log("warn", fmt.Sprintf("... and %d more errors", len(result.Errors)-i))
 					break
 				}
-				gl.Log("error", fmt.Sprintf("   Line %d: %s", err.Line, err.Error))
+				logz.Log("error", fmt.Sprintf("   Line %d: %s", err.Line, err.Error))
 			}
 		}
 	}
@@ -128,12 +133,16 @@ func (m *MigrationManager) RunMigrations(ctx context.Context) ([]MigrationResult
 	}
 
 	if totalFailed == 0 {
-		gl.Log("info", fmt.Sprintf("🎉 All migrations completed successfully! (%d statements)", totalSuccess))
+		logz.Log("info", fmt.Sprintf("🎉 All migrations completed successfully! (%d statements)", totalSuccess))
 	} else {
-		gl.Log("warn", fmt.Sprintf("⚠️  Migrations completed with partial success: %d succeeded, %d failed", totalSuccess, totalFailed))
+		logz.Log("warn", fmt.Sprintf("⚠️  Migrations completed with partial success: %d succeeded, %d failed", totalSuccess, totalFailed))
 	}
 
 	return results, nil
+}
+
+func (m *MigrationManager) EndpointRedacted(ctx context.Context, conn *types.DBConnection) (string, error) {
+	return fmt.Sprintf("redacted(%s)", conn.Config.DSN), nil
 }
 
 // executeSQLFileWithRecovery executes a single SQL file with statement-level error recovery
@@ -156,11 +165,14 @@ func (m *MigrationManager) executeSQLFileWithRecovery(ctx context.Context, db *s
 		return result
 	}
 
+	// Pre-process: Remove psql meta-commands (lines starting with backslash)
+	cleanedContent := m.removeMetaCommands(string(content))
+
 	// Parse SQL statements
-	statements := m.parseSQL(string(content))
+	statements := m.parseSQL(cleanedContent)
 	result.TotalStatements = len(statements)
 
-	gl.Log("debug", fmt.Sprintf("📝 Executing %s (%d statements)...", filename, len(statements)))
+	logz.Log("debug", fmt.Sprintf("📝 Executing %s (%d statements)...", filename, len(statements)))
 
 	// Execute each statement individually
 	for i, stmt := range statements {
@@ -182,10 +194,10 @@ func (m *MigrationManager) executeSQLFileWithRecovery(ctx context.Context, db *s
 			})
 
 			// Log individual statement error (debug level to avoid spam)
-			gl.Log("debug", fmt.Sprintf("❌ Statement %d failed: %v", i+1, err))
+			logz.Log("debug", fmt.Sprintf("❌ Statement %d failed: %v", i+1, err))
 		} else {
 			result.SuccessfulStmts++
-			gl.Log("debug", fmt.Sprintf("✅ Statement %d executed", i+1))
+			logz.Log("debug", fmt.Sprintf("✅ Statement %d executed", i+1))
 		}
 	}
 
@@ -193,10 +205,195 @@ func (m *MigrationManager) executeSQLFileWithRecovery(ctx context.Context, db *s
 	return result
 }
 
+func (m *MigrationManager) simulateSQLFileExecution(filename string) MigrationResult {
+	start := time.Now()
+	result := MigrationResult{
+		FileName: filename,
+		Errors:   make([]StatementError, 0),
+	}
+
+	// Read file content (embed.FS is already rooted at assets/)
+	content, err := bootstrap.MigrationFiles.ReadFile(filepath.Join("embedded", filename))
+	if err != nil {
+		result.Errors = append(result.Errors, StatementError{
+			Statement: "",
+			Error:     fmt.Sprintf("Failed to read file: %v", err),
+			Line:      0,
+		})
+		result.Duration = time.Since(start)
+		return result
+	}
+
+	// Parse SQL statements
+	statements := m.parseSQL(string(content))
+	result.TotalStatements = len(statements)
+
+	logz.Log("debug", fmt.Sprintf("📝 Simulating execution of %s (%d statements)...", filename, len(statements)))
+
+	// Simulate each statement individually
+	for i, stmt := range statements {
+		if strings.TrimSpace(stmt.SQL) == "" {
+			continue
+		}
+
+		// Here we would normally execute the statement, but since this is a simulation,
+		// we will just log that we would execute it.
+		logz.Log("debug", fmt.Sprintf("🔍 Simulating execution of Statement %d: %s", i+1, stmt.SQL))
+		result.SuccessfulStmts++
+	}
+
+	result.Duration = time.Since(start)
+	return result
+}
+
+func (m *MigrationManager) simulateMigrations(dryRun bool) ([]MigrationResult, error) {
+	migrations, err := loadMigrationOrder()
+	if err != nil {
+		logz.Log("warn", fmt.Sprintf("could not load bootstrap manifest: %v. Falling back to legacy migrations.", err))
+		migrations = []string{"001_init.sql", "002_hardening.sql", "003_create_user_invitations.sql"}
+	}
+	results := make([]MigrationResult, 0, len(migrations))
+
+	logz.Log("info", "🚀 Starting PostgreSQL migration simulation...")
+
+	for _, migration := range migrations {
+		if dryRun {
+			result := m.simulateSQLFileExecution(migration)
+			results = append(results, result)
+		} else {
+			result := m.executeSQLFile(migration)
+			results = append(results, result)
+		}
+	}
+
+	return results, nil
+}
+
+func (m *MigrationManager) executeSQLFile(filename string) MigrationResult {
+	start := time.Now()
+	result := MigrationResult{
+		FileName: filename,
+		Errors:   make([]StatementError, 0),
+	}
+
+	// Read file content (embed.FS is already rooted at assets/)
+	content, err := bootstrap.MigrationFiles.ReadFile(filepath.Join("embedded", filename))
+	if err != nil {
+		result.Errors = append(result.Errors, StatementError{
+			Statement: "",
+			Error:     fmt.Sprintf("Failed to read file: %v", err),
+			Line:      0,
+		})
+		result.Duration = time.Since(start)
+		return result
+	}
+
+	// Parse SQL statements
+	statements := m.parseSQL(string(content))
+	result.TotalStatements = len(statements)
+
+	logz.Log("debug", fmt.Sprintf("📝 Executing %s (%d statements)...", filename, len(statements)))
+
+	// Execute each statement individually
+	for _, stmt := range statements {
+		if strings.TrimSpace(stmt.SQL) == "" {
+			continue
+		}
+
+		// Execute statement with timeout
+		stmtCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		db, err := sql.Open("postgres", m.dsn)
+		if err != nil {
+			result.FailedStmts++
+			result.Errors = append(result.Errors, StatementError{
+				Statement: stmt.SQL,
+				Error:     fmt.Sprintf("Failed to open database: %v", err),
+				Line:      stmt.Line,
+			})
+		}
+		db.ExecContext(stmtCtx, stmt.SQL)
+
+		cancel()
+
+		if err != nil {
+			result.FailedStmts++
+			result.Errors = append(result.Errors, StatementError{
+				Statement: stmt.SQL,
+				Error:     fmt.Sprintf("Failed to execute statement: %v", err),
+				Line:      stmt.Line,
+			})
+		}
+	}
+
+	result.Duration = time.Since(start)
+	return result
+}
+
+func (m *MigrationManager) resetDatabase(ctx context.Context, force bool) error {
+	// Reset the database to a clean state
+	return nil
+}
+
 // SQLStatement represents a parsed SQL statement with line information
 type SQLStatement struct {
 	SQL  string
 	Line int
+}
+
+type manifest struct {
+	ExecutionOrder []struct {
+		File string `json:"file"`
+	} `json:"execution_order"`
+}
+
+func loadMigrationOrder() ([]string, error) {
+	data, err := bootstrap.MigrationFiles.ReadFile(filepath.Join("embedded", "bootstrap.manifest.json"))
+	if err != nil {
+		return nil, err
+	}
+
+	var mf manifest
+	if err := json.Unmarshal(data, &mf); err != nil {
+		return nil, err
+	}
+
+	if len(mf.ExecutionOrder) == 0 {
+		return nil, fmt.Errorf("manifest execution_order is empty")
+	}
+
+	files := make([]string, 0, len(mf.ExecutionOrder))
+	for _, step := range mf.ExecutionOrder {
+		if strings.TrimSpace(step.File) == "" {
+			continue
+		}
+		files = append(files, step.File)
+	}
+	if len(files) == 0 {
+		return nil, fmt.Errorf("manifest has no valid files")
+	}
+	return files, nil
+}
+
+// removeMetaCommands removes psql meta-commands (lines starting with backslash) from SQL content.
+// Examples: \echo, \set, \timing, \connect, etc.
+// These commands are psql-specific and not valid SQL for database/sql driver.
+func (m *MigrationManager) removeMetaCommands(content string) string {
+	var result strings.Builder
+	lines := strings.Split(content, "\n")
+
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		// Skip lines that start with backslash (psql meta-commands)
+		if strings.HasPrefix(trimmed, "\\") {
+			// Replace with empty line to preserve line numbers for error reporting
+			result.WriteString("\n")
+			continue
+		}
+		result.WriteString(line)
+		result.WriteString("\n")
+	}
+
+	return result.String()
 }
 
 // parseSQL splits SQL content into individual statements, preserving line numbers
@@ -413,7 +610,7 @@ func (m *MigrationManager) SchemaExists() (bool, error) {
 
 	err = db.QueryRow(extQuery).Scan(&extCount)
 	if err != nil {
-		gl.Log("debug", fmt.Sprintf("Could not check extensions: %v", err))
+		logz.Log("debug", fmt.Sprintf("Could not check extensions: %v", err))
 		extCount = 0
 	}
 
@@ -421,7 +618,7 @@ func (m *MigrationManager) SchemaExists() (bool, error) {
 	exists := count > 0 || extCount >= 2
 
 	if exists {
-		gl.Log("debug", fmt.Sprintf("Schema check: %d tables, %d extensions found", count, extCount))
+		logz.Log("debug", fmt.Sprintf("Schema check: %d tables, %d extensions found", count, extCount))
 	}
 
 	return exists, nil

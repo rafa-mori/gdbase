@@ -11,7 +11,6 @@ import (
 	// gl "github.com/kubex-ecosystem/gdbase/logger"
 	"sync"
 
-	"github.com/kubex-ecosystem/gdbase/internal/module/kbx"
 	crp "github.com/kubex-ecosystem/gdbase/internal/security/crypto"
 	krs "github.com/kubex-ecosystem/gdbase/internal/security/external"
 	"github.com/kubex-ecosystem/logz"
@@ -130,7 +129,7 @@ func (d *DBServiceImpl) Initialize(ctx context.Context) error {
 				dbPort = dbConfig.Port.(string)
 				dbPass = dbConfig.Password
 				if dbPass == "" {
-					dbPassKey, dbPassErr := kbx.GetOrGenPasswordKeyringPass("pgpass")
+					dbPassKey, dbPassErr := krs.GetOrGenerateFromKeyring("pgpass")
 					if dbPassErr != nil {
 						gl.Log("error", fmt.Sprintf("❌ Erro ao recuperar senha do banco de dados: %v", dbPassErr))
 						continue

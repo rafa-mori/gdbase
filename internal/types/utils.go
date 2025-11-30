@@ -6,7 +6,7 @@ import (
 	"os"
 
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
-	gl "github.com/kubex-ecosystem/logz"
+	logz "github.com/kubex-ecosystem/logz"
 )
 
 func IsShellSpecialVar(c uint8) bool {
@@ -16,7 +16,6 @@ func IsShellSpecialVar(c uint8) bool {
 	}
 	return false
 }
-
 func IsAlphaNum(c uint8) bool {
 	return c == '_' || '0' <= c && c <= '9' || 'a' <= c && c <= 'z' || 'A' <= c && c <= 'Z'
 }
@@ -25,7 +24,7 @@ func screeningByRAMSize(env ci.IEnvironment, filePath string) string {
 
 	fileInfo, err := os.Stat(filePath)
 	if err != nil {
-		gl.Log("error", fmt.Sprintf("Erro ao obter tamanho do arquivo: %v", err))
+		logz.Log("error", fmt.Sprintf("Erro ao obter tamanho do arquivo: %v", err))
 		return "fallback"
 	}
 

@@ -10,4 +10,8 @@ type IMapper[T any] interface {
 	Serialize(format string) ([]byte, error)
 	// Deserialize converts a byte array in the specified format to an object of type T.
 	Deserialize(data []byte, format string) (*T, error)
+	// GetObject returns the underlying object of type T.
+	GetObject() *T
+	// GetFilePath returns the file path associated with the mapper.
+	GetFilePath() string
 }

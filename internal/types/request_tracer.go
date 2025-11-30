@@ -10,8 +10,7 @@ import (
 	"time"
 
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
-	"github.com/kubex-ecosystem/logz"
-	gl "github.com/kubex-ecosystem/logz"
+	logz "github.com/kubex-ecosystem/logz"
 )
 
 var (
@@ -52,7 +51,7 @@ func newRequestsTracer(ip, port, endpoint, method, userAgent, filePath string) *
 	if tracerT, exists = RequestTracers[ip]; exists {
 		tracer, ok = tracerT.(*RequestsTracer)
 		if !ok {
-			gl.Log("error", fmt.Sprintf("Error casting tracer to RequestsTracer for IP: %s", ip))
+			logz.Log("error", fmt.Sprintf("Error casting tracer to RequestsTracer for IP: %s", ip))
 			return nil
 		}
 
@@ -66,28 +65,28 @@ func newRequestsTracer(ip, port, endpoint, method, userAgent, filePath string) *
 
 		if len(tracer.TimeList) > 1 {
 			if tracer.TimeList[len(tracer.TimeList)-1].Sub(tracer.TimeList[len(tracer.TimeList)-2]) <= RequestWindow {
-				gl.Log("info", fmt.Sprintf("Request limit exceeded for IP: %s, Count: %d", tracer.IP, tracer.Count))
+				logz.Log("info", fmt.Sprintf("Request limit exceeded for IP: %s, Count: %d", tracer.IP, tracer.Count))
 				tracer.Valid = false
 				tracer.Error = fmt.Errorf("request limit exceeded for IP: %s, Count: %d", tracer.IP, tracer.Count)
 			} else if tracer.TimeList[len(tracer.TimeList)-1].Sub(tracer.TimeList[0]) > RequestWindow {
-				gl.Log("info", fmt.Sprintf("Request window exceeded for IP: %s, Count: %d", tracer.IP, tracer.Count))
+				logz.Log("info", fmt.Sprintf("Request window exceeded for IP: %s, Count: %d", tracer.IP, tracer.Count))
 				tracer.Count = 1
 				tracer.TimeList = []time.Time{tracer.TimeList[len(tracer.TimeList)-1]}
 				tracer.UserAgents = []string{userAgent}
 				tracer.Valid = true
 				tracer.Error = nil
 			} else if tracer.Count > RequestLimit {
-				gl.Log("info", fmt.Sprintf("Request limit exceeded for IP: %s, Count: %d", tracer.IP, tracer.Count))
+				logz.Log("info", fmt.Sprintf("Request limit exceeded for IP: %s, Count: %d", tracer.IP, tracer.Count))
 				tracer.Valid = false
 				tracer.Error = fmt.Errorf("request limit exceeded for IP: %s, Count: %d", tracer.IP, tracer.Count)
 			} else {
-				gl.Log("info", fmt.Sprintf("Request limit not exceeded for IP: %s, Count: %d", tracer.IP, tracer.Count))
+				logz.Log("info", fmt.Sprintf("Request limit not exceeded for IP: %s, Count: %d", tracer.IP, tracer.Count))
 				tracer.Valid = true
 				tracer.Error = nil
 			}
 		}
 		if tracer.FilePath != filePath {
-			gl.Log("info", fmt.Sprintf("File path changed for IP: %s, Count: %d", tracer.IP, tracer.Count))
+			logz.Log("info", fmt.Sprintf("File path changed for IP: %s, Count: %d", tracer.IP, tracer.Count))
 			tracer.OldFilePath = tracer.FilePath
 			tracer.FilePath = filePath
 		}
@@ -148,7 +147,7 @@ func (r *RequestsTracer) GetOldFilePath() string {
 	if r.OldFilePath == "" {
 		abs, err := filepath.Abs(filepath.Join("./", "requests_tracer.json"))
 		if err != nil {
-			gl.Log("error", fmt.Sprintf("Error getting absolute path: %v", err))
+			logz.Log("error", fmt.Sprintf("Error getting absolute path: %v", err))
 			return ""
 		}
 		r.OldFilePath = abs
@@ -160,7 +159,7 @@ func (r *RequestsTracer) GetFilePath() string {
 	if r.FilePath == "" {
 		abs, err := filepath.Abs(filepath.Join("./", "requests_tracer.json"))
 		if err != nil {
-			gl.Log("error", fmt.Sprintf("Error getting absolute path: %v", err))
+			logz.Log("error", fmt.Sprintf("Error getting absolute path: %v", err))
 			return ""
 		}
 		r.FilePath = abs
@@ -171,7 +170,7 @@ func (r *RequestsTracer) SetFilePath(filePath string) {
 	if filePath == "" {
 		abs, err := filepath.Abs(filepath.Join("./", "requests_tracer.json"))
 		if err != nil {
-			gl.Log("error", fmt.Sprintf("Error getting absolute path: %v", err))
+			logz.Log("error", fmt.Sprintf("Error getting absolute path: %v", err))
 			return
 		}
 		r.FilePath = abs
@@ -182,7 +181,7 @@ func (r *RequestsTracer) SetFilePath(filePath string) {
 func (r *RequestsTracer) GetMapper() ci.IMapper[ci.IRequestsTracer] { return r.Mapper }
 func (r *RequestsTracer) SetMapper(mapper ci.IMapper[ci.IRequestsTracer]) {
 	if mapper == nil {
-		gl.Log("error", "Mapper cannot be nil")
+		logz.Log("error", "Mapper cannot be nil")
 		return
 	}
 	r.Mapper = mapper
@@ -190,7 +189,7 @@ func (r *RequestsTracer) SetMapper(mapper ci.IMapper[ci.IRequestsTracer]) {
 func (r *RequestsTracer) GetRequestWindow() time.Duration { return r.RequestWindow }
 func (r *RequestsTracer) SetRequestWindow(window time.Duration) {
 	if window <= 0 {
-		gl.Log("error", "Request window cannot be negative or zero")
+		logz.Log("error", "Request window cannot be negative or zero")
 		return
 	}
 	r.RequestWindow = window
@@ -198,7 +197,7 @@ func (r *RequestsTracer) SetRequestWindow(window time.Duration) {
 func (r *RequestsTracer) GetRequestLimit() int { return r.RequestLimit }
 func (r *RequestsTracer) SetRequestLimit(limit int) {
 	if limit <= 0 {
-		gl.Log("error", "Request limit cannot be negative or zero")
+		logz.Log("error", "Request limit cannot be negative or zero")
 		return
 	}
 	r.RequestLimit = limit
@@ -212,29 +211,29 @@ func LoadRequestsTracerFromFile(g ci.IGoBE) (map[string]ci.IRequestsTracer, erro
 		RequestTracers = make(map[string]ci.IRequestsTracer)
 	}
 
-	gl.Log("info", "Loading request tracers from file")
+	logz.Log("info", "Loading request tracers from file")
 	if _, err := os.Stat(g.GetLogFilePath()); os.IsNotExist(err) {
-		gl.Log("warn", fmt.Sprintf("File does not exist: %v, creating new file", err.Error()))
+		logz.Log("warn", fmt.Sprintf("File does not exist: %v, creating new file", err.Error()))
 		if _, createErr := os.Create(g.GetLogFilePath()); createErr != nil {
-			gl.Log("error", fmt.Sprintf("Error creating file: %v", createErr.Error()))
+			logz.Log("error", fmt.Sprintf("Error creating file: %v", createErr.Error()))
 			return nil, createErr
 		} else {
-			gl.Log("info", "File created successfully")
+			logz.Log("info", "File created successfully")
 		}
 		return nil, nil
 	}
 
-	gl.Log("info", "File exists, proceeding to load")
+	logz.Log("info", "File exists, proceeding to load")
 	inputFile, err := os.Open(g.GetLogFilePath())
 	if err != nil {
-		gl.Log("error", "Erro ao abrir arquivo: %v", err.Error())
+		logz.Log("error", "Erro ao abrir arquivo: %v", err.Error())
 		return nil, err
 	}
 
 	defer func(inputFile *os.File) {
-		gl.Log("info", "Closing input file")
+		logz.Log("info", "Closing input file")
 		if closeErr := inputFile.Close(); closeErr != nil {
-			gl.Log("error", fmt.Sprintf("Erro ao fechar arquivo: %v", err))
+			logz.Log("error", fmt.Sprintf("Erro ao fechar arquivo: %v", err))
 		}
 	}(inputFile)
 
@@ -245,28 +244,28 @@ func LoadRequestsTracerFromFile(g ci.IGoBE) (map[string]ci.IRequestsTracer, erro
 	g.Mu().MuAdd(1)
 	go func(g ci.IGoBE) {
 		defer g.Mu().MuDone()
-		gl.Log("info", "Decoding request tracers from file")
+		logz.Log("info", "Decoding request tracers from file")
 		for decoder.More() {
 			var existing *RequestsTracer
 			if err := decoder.Decode(&existing); err != nil || existing == nil {
 				if err == nil {
 					err = fmt.Errorf("existing não inicializado: %v, err: %s", existing, err)
 				}
-				gl.Log("error", fmt.Sprintf("Erro ao decodificar:%s", err.Error()))
+				logz.Log("error", fmt.Sprintf("Erro ao decodificar:%s", err.Error()))
 				continue
 			}
-			gl.Log("info", fmt.Sprintf("Decoded request tracer: %s", existing.IP))
+			logz.Log("info", fmt.Sprintf("Decoded request tracer: %s", existing.IP))
 			RequestTracers[existing.IP] = existing
 		}
 	}(g)
 
-	gl.Log("info", "Waiting for decoding to finish")
+	logz.Log("info", "Waiting for decoding to finish")
 	g.Mu().MuWait()
 
 	if len(RequestTracers) > 0 {
-		gl.Log("info", fmt.Sprintf("Loaded %d request tracers", len(RequestTracers)))
+		logz.Log("info", fmt.Sprintf("Loaded %d request tracers", len(RequestTracers)))
 	} else {
-		gl.Log("warn", "No request tracers loaded from file")
+		logz.Log("warn", "No request tracers loaded from file")
 	}
 
 	return RequestTracers, nil
@@ -296,7 +295,7 @@ func updateRequestTracer(g ci.IGoBE, updatedTracer ci.IRequestsTracer) error {
 			defer func(outputFile *os.File, tmpFilePath string) {
 				_ = outputFile.Close()
 				if removeErr := os.Remove(tmpFilePath); removeErr != nil {
-					gl.Log("error", fmt.Sprintf("Erro ao remover arquivo temporário: %v", removeErr))
+					logz.Log("error", fmt.Sprintf("Erro ao remover arquivo temporário: %v", removeErr))
 					return
 				}
 			}(outputFile, tmpFilePath)
@@ -312,7 +311,7 @@ func updateRequestTracer(g ci.IGoBE, updatedTracer ci.IRequestsTracer) error {
 						err = fmt.Errorf("existing não inicializado")
 					}
 
-					gl.Log("error", fmt.Sprintf("Erro ao decodificar linha: %v", err))
+					logz.Log("error", fmt.Sprintf("Erro ao decodificar linha: %v", err))
 
 					continue
 				} else {
@@ -346,7 +345,7 @@ func isDuplicateRequest(g ci.IGoBE, rt ci.IRequestsTracer, logger *logz.LoggerZ)
 	if strategy == "strings" {
 		data, err := os.ReadFile(rt.GetFilePath())
 		if err != nil {
-			gl.Log("error", fmt.Sprintf("Erro ao ler arquivo: %v", err))
+			logz.Log("error", fmt.Sprintf("Erro ao ler arquivo: %v", err))
 			return false
 		}
 
@@ -359,7 +358,7 @@ func isDuplicateRequest(g ci.IGoBE, rt ci.IRequestsTracer, logger *logz.LoggerZ)
 	} else {
 		f, err := os.Open(rt.GetFilePath())
 		if err != nil {
-			gl.Log("error", fmt.Sprintf("Erro ao abrir arquivo: %v", err))
+			logz.Log("error", fmt.Sprintf("Erro ao abrir arquivo: %v", err))
 			return false
 		}
 		defer func(f *os.File) {
@@ -396,7 +395,7 @@ func updateRequestTracerInMemory(updatedTracer ci.IRequestsTracer) error {
 			if existing.IP == updatedTracer.GetIP() && existing.Port == updatedTracer.GetPort() {
 				lines[i] = func(data ci.IRequestsTracer) string {
 					if lineBytes, lineBytesErr := json.Marshal(data); lineBytesErr != nil {
-						gl.Log("error", fmt.Sprintf("Error marshalling updated tracer: %v", lineBytesErr))
+						logz.Log("error", fmt.Sprintf("Error marshalling updated tracer: %v", lineBytesErr))
 						return ""
 					} else {
 						return string(lineBytes)

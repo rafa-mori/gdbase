@@ -1,0 +1,17 @@
+{
+  "execution_timestamp": "2025-11-11T04:20:34-08:00",
+  "database_url": "postgres:***@localhost:5432/canalize_db",
+  "total_duration_seconds": 2,
+  "status": "success",
+  "log_file": "/ALL/CANALIZE/projects/DATABASE/canalize_pg_sql_3/logs/bootstrap_20251111_042032.log",
+  "steps_executed": 9,
+  "manifest_version": "3.0.0",
+  "schema_version": "hybrid-v1.0",
+  "features": {
+    "multi_tenancy": true,
+    "rbac_hierarchy": true,
+    "invites": true,
+    "business_entities": true,
+    "saas_tiers": true
+  }
+}

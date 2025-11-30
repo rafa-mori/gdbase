@@ -5,6 +5,7 @@ import (
 	"embed"
 
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
+	"github.com/kubex-ecosystem/gdbase/internal/module/kbx"
 	svc "github.com/kubex-ecosystem/gdbase/internal/services"
 	it "github.com/kubex-ecosystem/gdbase/internal/types"
 	"github.com/kubex-ecosystem/logz"
@@ -45,8 +46,8 @@ func NewDBConfigWithArgs(ctx context.Context, dbName, dbConfigFilePath string, a
 func NewDBConfigFromFile(ctx context.Context, dbConfigFilePath string, autoMigrate bool, logger *logz.LoggerZ, debug bool) (*DBConfigImpl, error) {
 	return svc.NewDBConfigFromFile(ctx, dbConfigFilePath, autoMigrate, logger, debug)
 }
-func SetupDatabaseServices(ctx context.Context, d svc.IDockerService, config *DBConfigImpl) error {
-	return svc.SetupDatabaseServices(ctx, d, config)
+func SetupDatabaseServices(ctx context.Context, d ci.IDockerService, config *kbx.RootConfig) error {
+	return d.InitializeWithConfig(ctx, config)
 }
 
 func SetMigrationFiles(mf embed.FS) {
@@ -70,8 +71,8 @@ type MongoDB = it.MongoDB
 type Redis = it.Redis
 type RabbitMQ = it.RabbitMQ
 
-type IDockerService = svc.IDockerService
-type DockerService = svc.DockerService
+type IDockerService = ci.IDockerService
+type DockerService = svc.Services
 
 type DatabaseImpl = it.Database
 type RabbitMQConfig = it.RabbitMQ

@@ -14,7 +14,6 @@ func NewEventBus() *EventBus {
 }
 
 // Adiciona eventos
-
 func (e *EventBus) On(name, event string, callback func(...any)) {
 	e.mutex.Lock()
 	defer e.mutex.Unlock()
@@ -27,7 +26,6 @@ func (e *EventBus) On(name, event string, callback func(...any)) {
 }
 
 // Dispara eventos
-
 func (e *EventBus) Emit(name, event string, args ...any) {
 	e.mutex.Lock()
 	defer e.mutex.Unlock()

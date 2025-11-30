@@ -1,10 +1,11 @@
 package types
 
 import (
+	"fmt"
+
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
-	tu "github.com/kubex-ecosystem/gdbase/utils"
-	"github.com/kubex-ecosystem/logz"
-	gl "github.com/kubex-ecosystem/logz"
+
+	logz "github.com/kubex-ecosystem/logz"
 
 	"reflect"
 
@@ -12,7 +13,7 @@ import (
 )
 
 var (
-	smBuf, mdBuf, lgBuf = tu.GetDefaultBufferSizes()
+	smBuf, mdBuf, lgBuf = GetDefaultBufferSizes()
 )
 
 type ChannelBase[T any] struct {
@@ -27,9 +28,9 @@ type ChannelBase[T any] struct {
 
 // NewChannelBase creates a new ChannelBase instance with the provided name and type.
 func NewChannelBase[T any](name string, buffers int, logger *logz.LoggerZ) ci.IChannelBase[any] {
-	if logger == nil {
-		logger = gl.GetLoggerZ("GoLife")
-	}
+	// if logger == nil {
+	logger = logz.NewLogger("GoLife")
+	// }
 	mu := NewMutexesType()
 	if buffers <= 0 {
 		buffers = lgBuf
@@ -87,7 +88,7 @@ func (cb *ChannelBase[T]) Close() error {
 	cb.MuLock()
 	defer cb.MuUnlock()
 	if cb.Channel != nil {
-		logz.Log("Closing channel for:", cb.Name)
+		logz.Log("info", "Closing channel for:", cb.Name)
 		close(cb.Channel.(chan T))
 	}
 	return nil
@@ -96,7 +97,7 @@ func (cb *ChannelBase[T]) Clear() error {
 	cb.MuLock()
 	defer cb.MuUnlock()
 	if cb.Channel != nil {
-		logz.Log("Clearing channel for:", cb.Name)
+		logz.Log("info", "Clearing channel for:", cb.Name)
 		close(cb.Channel.(chan T))
 		cb.Channel = make(chan T, cb.Buffers)
 	}
@@ -135,9 +136,9 @@ type ChannelCtl[T any] struct {
 
 // NewChannelCtl creates a new ChannelCtl instance with the provided name.
 func NewChannelCtl[T any](name string, logger *logz.LoggerZ) ci.IChannelCtl[T] {
-	if logger == nil {
-		logger = gl.GetLoggerZ("GoLife")
-	}
+	// if logger == nil {
+	logger = logz.NewLogger("GoLife")
+	// }
 	ref := NewReference(name)
 	mu := NewMutexesType()
 
@@ -155,9 +156,6 @@ func NewChannelCtl[T any](name string, logger *logz.LoggerZ) ci.IChannelCtl[T] {
 
 // NewChannelCtlWithProperty creates a new ChannelCtl instance with the provided name and type.
 func NewChannelCtlWithProperty[T any, P ci.IProperty[T]](name string, buffers *int, property P, withMetrics bool, logger *logz.LoggerZ) ci.IChannelCtl[T] {
-	if logger == nil {
-		logger = gl.GetLoggerZ("GoLife")
-	}
 	ref := NewReference(name)
 	mu := NewMutexesType()
 	buf := 3
@@ -226,7 +224,7 @@ func (cCtl *ChannelCtl[T]) SetSubChannels(channels map[string]interface{}) map[s
 }
 func (cCtl *ChannelCtl[T]) GetSubChannelByName(name string) (any, reflect.Type, bool) {
 	if cCtl.Channels == nil {
-		// logz.Log("info", "Creating channels map for:", cCtl.Name, "ID:" cCtl.ID.String())
+		logz.Log("info", "Creating channels map for:", cCtl.Name, "ID:", cCtl.ID.String())
 		cCtl.Channels = initChannelsMap(cCtl)
 	}
 	cCtl.MuRLock()
@@ -235,11 +233,11 @@ func (cCtl *ChannelCtl[T]) GetSubChannelByName(name string) (any, reflect.Type, 
 		if channel, ok := rawChannel.(ci.IChannelBase[T]); ok {
 			return channel, channel.GetType(), true
 		} else {
-			// logz.Log("error", fmt.Sprintf("Channel %s is not a valid channel type. Expected: %s, receive %s", name, reflect.TypeFor[ci.IChannelBase[T]]().String() reflect.TypeOf(rawChannel)))
+			logz.Log("error", fmt.Sprintf("Channel %s is not a valid channel type. Expected: %s, receive %s", name, reflect.TypeFor[ci.IChannelBase[T]]().String(), reflect.TypeOf(rawChannel)))
 			return nil, nil, false
 		}
 	}
-	// logz.Log("error", "Channel not found:", name, "ID:" cCtl.ID.String())
+	logz.Log("error", "Channel not found:", name, "ID:", cCtl.ID.String())
 	return nil, nil, false
 }
 func (cCtl *ChannelCtl[T]) SetSubChannelByName(name string, channel any) (any, error) {
@@ -401,21 +399,23 @@ func (cCtl *ChannelCtl[T]) WithMetrics(metrics bool) ci.IChannelCtl[T] {
 }
 
 func initChannelsMap[T any](v *ChannelCtl[T]) map[string]interface{} {
+	logger := logz.GetLoggerZ("GoLife")
+
 	if v.Channels == nil {
 		v.MuLock()
 		defer v.MuUnlock()
 		logz.Log("ID:", v.ID.String())
 		v.Channels = make(map[string]interface{})
 		// done is a channel for the done signal.
-		// v.Channels["done"] = NewChannelBase[bool]("done", smBuf, *logz.LoggerZ)
+		v.Channels["done"] = NewChannelBase[bool]("done", smBuf, logger)
 		// ctl is a channel for the internal control channel.
-		// v.Channels["ctl"] = NewChannelBase[string]("ctl", mdBuf, *logz.LoggerZ)
+		v.Channels["ctl"] = NewChannelBase[string]("ctl", mdBuf, logger)
 		// condition is a channel for the condition signal.
-		// v.Channels["condition"] = NewChannelBase[string]("cond", smBuf, *logz.LoggerZ)
+		v.Channels["condition"] = NewChannelBase[string]("cond", smBuf, logger)
 
 		if v.withMetrics {
-			// v.Channels["telemetry"] = NewChannelBase[string]("telemetry", mdBuf, *logz.LoggerZ)
-			// v.Channels["monitor"] = NewChannelBase[string]("monitor", mdBuf, *logz.LoggerZ)
+			v.Channels["telemetry"] = NewChannelBase[string]("telemetry", mdBuf, logger)
+			v.Channels["monitor"] = NewChannelBase[string]("monitor", mdBuf, logger)
 		}
 	}
 	return v.Channels
@@ -439,3 +439,117 @@ func getDefaultChannelsMap(withMetrics bool, logger *logz.LoggerZ) map[string]an
 
 	return mp
 }
+
+func chanRoutineCtl[T any](v *ChannelCtl[T], chCtl chan string, ch chan T) {
+	// Evita usar select com um único case — faz uma recepção direta.
+	if chCtl == nil {
+		logz.Log("debug", "Control channel is nil for:", v.GetName(), "ID:", v.GetID().String())
+		return
+	}
+
+	msg := <-chCtl
+	switch msg {
+	case "stop":
+		if ch != nil {
+			logz.Log("debug", "Stopping channel for:", v.GetName(), "ID:", v.GetID().String())
+			ch <- v.GetProperty().GetValue()
+			return
+		}
+	case "get":
+		if ch != nil {
+			logz.Log("debug", "Getting value from channel for:", v.GetName(), "ID:", v.GetID().String())
+			ch <- v.GetProperty().GetValue()
+		}
+	case "set":
+		if ch != nil {
+			logz.Log("debug", "Waiting for value from channel for:", v.GetName(), "ID:", v.GetID().String())
+			nVal := <-ch
+			if reflect.ValueOf(nVal).IsValid() {
+				if reflect.ValueOf(nVal).CanConvert(reflect.TypeFor[T]()) {
+					logz.Log("debug", "Setting value from channel for:", v.GetName(), "ID:", v.GetID().String())
+					v.GetProperty().SetValue(&nVal)
+				} else {
+					logz.Log("error", "Set: invalid type for channel value (", reflect.TypeFor[T]().String(), ")")
+				}
+			}
+		}
+	case "save":
+		if ch != nil {
+			logz.Log("debug", "Saving value from channel for:", v.GetName(), "ID:", v.GetID().String())
+			nVal := <-ch
+			if reflect.ValueOf(nVal).IsValid() {
+				if reflect.ValueOf(nVal).CanConvert(reflect.TypeFor[T]()) {
+					logz.Log("debug", "Saving value from channel for:", v.GetName(), "ID:", v.GetID().String())
+					v.GetProperty().SetValue(&nVal)
+				} else {
+					logz.Log("error", "Save: invalid type for channel value (", reflect.TypeFor[T]().String(), ")")
+				}
+			}
+		}
+	case "clear":
+		if ch != nil {
+			logz.Log("debug", "Clearing channel for:", v.GetName(), "ID:", v.GetID().String())
+			v.GetProperty().SetValue(nil)
+		}
+	}
+}
+func chanRoutineDefer[T any](v *ChannelCtl[T], chCtl chan string, ch chan T) {
+	if r := recover(); r != nil {
+		logz.Log("error", "Recovering from panic in monitor routine for:", v.GetName(), "ID:", v.GetID().String(), "Error:", fmt.Sprintf("%v", r))
+		// Não recriamos canais aqui porque a atribuição local não afeta o estado
+		// externo (são parâmetros pass-by-value). Alocar canais apenas localmente
+		// gerava um warning ("value is never used") e não ajudava na recuperação.
+		// Se necessário, a lógica de re-criação deve ocorrer no código que mantém
+		// referências aos canais (ex: dentro do objeto v).
+	} else {
+		logz.Log("debug", "Exiting monitor routine for:", v.GetName(), "ID:", v.GetID().String())
+		// When the monitor routine is done, we need to close the channels.
+		// If the channel is not nil, close it.
+		if ch != nil {
+			close(ch)
+		}
+		if chCtl != nil {
+			close(chCtl)
+		}
+		ch = nil
+		chCtl = nil
+	}
+	// Always check the v mutexes to see if someone is locking the mutex or not on exit (defer).
+	if v.MuTryLock() {
+		// If the mutex was locked, unlock it.
+		v.MuUnlock()
+	} else if v.MuTryRLock() {
+		// If the mutex was locked, unlock it.
+		v.MuRUnlock()
+	}
+}
+func chanRoutineWrapper[T any](v *ChannelCtl[T]) {
+	logz.Log("debug", "Setting monitor routine for:", v.GetName(), "ID:", v.GetID().String())
+	if rawChCtl, chCtlType, chCtlOk := v.GetSubChannelByName("ctl"); !chCtlOk {
+		logz.Log("error", "ChannelCtl: no control channel found")
+		return
+	} else {
+		if chCtlType != reflect.TypeOf("string") {
+			logz.Log("error", "ChannelCtl: control channel is not a string channel")
+			return
+		}
+		chCtl := reflect.ValueOf(rawChCtl).Interface().(chan string)
+		rawCh := v.GetMainChannel()
+		ch := reflect.ValueOf(rawCh).Interface().(chan T)
+
+		defer chanRoutineDefer[T](v, chCtl, ch)
+		for {
+			chanRoutineCtl[T](v, chCtl, ch)
+			if ch == nil {
+				logz.Log("debug", "Channel is nil for:", v.GetName(), "ID:", v.GetID().String(), "Exiting monitor routine")
+				break
+			}
+			if chCtl == nil {
+				logz.Log("debug", "Control channel is nil for:", v.GetName(), "ID:", v.GetID().String(), "Exiting monitor routine")
+				break
+			}
+		}
+	}
+}
+
+func GetDefaultBufferSizes() (sm, md, lg int) { return 2, 5, 10 }

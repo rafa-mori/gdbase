@@ -6,10 +6,10 @@ import (
 )
 
 func RegX() *GDBase {
-	var configPath = os.Getenv("GDBASE_CONFIGFILE")
-	var keyPath = os.Getenv("GDBASE_KEYFILE")
-	var certPath = os.Getenv("GDBASE_CERTFILE")
-	var hideBannerV = os.Getenv("GDBASE_HIDEBANNER")
+	var configPath = os.Getenv("CANALIZEDS_CONFIGFILE")
+	var keyPath = os.Getenv("CANALIZEDS_KEYFILE")
+	var certPath = os.Getenv("CANALIZEDS_CERTFILE")
+	var hideBannerV = os.Getenv("CANALIZEDS_HIDEBANNER")
 
 	return &GDBase{
 		configPath: configPath,

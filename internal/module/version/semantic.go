@@ -12,7 +12,7 @@ import (
 	"time"
 
 	manifest "github.com/kubex-ecosystem/gdbase/internal/module/info"
-	gl "github.com/kubex-ecosystem/logz"
+	logz "github.com/kubex-ecosystem/logz"
 	"github.com/spf13/cobra"
 )
 
@@ -26,7 +26,7 @@ func init() {
 	if info == nil {
 		info, err = manifest.GetManifest()
 		if err != nil {
-			gl.Log("error", "Failed to get manifest: "+err.Error())
+			logz.Log("error", "Failed to get manifest: "+err.Error())
 		}
 	}
 }
@@ -62,7 +62,7 @@ func init() {
 		var err error
 		info, err = manifest.GetManifest()
 		if err != nil {
-			gl.Log("error", "Failed to get manifest: "+err.Error())
+			logz.Log("error", "Failed to get manifest: "+err.Error())
 		}
 	}
 	if vrs == nil {
@@ -73,7 +73,7 @@ func init() {
 func getLatestTag(repoURL string) (string, error) {
 	defer func() {
 		if rec := recover(); rec != nil {
-			gl.Log("error", "Recovered from panic in getLatestTag: %v", rec)
+			logz.Log("error", "Recovered from panic in getLatestTag: %v", rec)
 			err = fmt.Errorf("panic occurred while fetching latest tag: %v", rec)
 		}
 	}()
@@ -251,7 +251,7 @@ func (v *ServiceImpl) GetRepository() string {
 }
 func (v *ServiceImpl) setLastCheckedAt(t time.Time) {
 	v.lastCheckedAt = t
-	gl.Log("debug", "Last checked at: "+t.Format(time.RFC3339))
+	logz.Log("debug", "Last checked at: "+t.Format(time.RFC3339))
 }
 
 func NewVersionService() Service {
@@ -280,9 +280,9 @@ func init() {
 			Long:  "Print the version number of " + info.GetName() + " and other related information.",
 			Run: func(cmd *cobra.Command, args []string) {
 				if info.IsPrivate() {
-					gl.Log("warn", "The information shown may not be accurate for private repositories.")
-					gl.Log("info", "Current version: "+GetVersion())
-					gl.Log("info", "Git repository: "+GetGitRepositoryModelURL())
+					logz.Log("warn", "The information shown may not be accurate for private repositories.")
+					logz.Log("info", "Current version: "+GetVersion())
+					logz.Log("info", "Git repository: "+GetGitRepositoryModelURL())
 					return
 				}
 				GetVersionInfo()
@@ -296,7 +296,7 @@ func init() {
 			Long:  "Print the latest version number of " + info.GetName() + " from the Git repository.",
 			Run: func(cmd *cobra.Command, args []string) {
 				if info.IsPrivate() {
-					gl.Log("error", "Cannot fetch latest version for private repositories.")
+					logz.Log("error", "Cannot fetch latest version for private repositories.")
 					return
 				}
 				GetLatestVersionInfo()
@@ -310,7 +310,7 @@ func init() {
 			Long:  "Check if the current version is the latest version of " + info.GetName() + " and print the version information.",
 			Run: func(cmd *cobra.Command, args []string) {
 				if info.IsPrivate() {
-					gl.Log("error", "Cannot check version for private repositories.")
+					logz.Log("error", "Cannot check version for private repositories.")
 					return
 				}
 				GetVersionInfoWithLatestAndCheck()
@@ -324,18 +324,18 @@ func init() {
 			Long:  "Update the version information of " + info.GetName() + " by fetching the latest version from the Git repository.",
 			Run: func(cmd *cobra.Command, args []string) {
 				if info.IsPrivate() {
-					gl.Log("error", "Cannot update version for private repositories.")
+					logz.Log("error", "Cannot update version for private repositories.")
 					return
 				}
 				if err := vrs.updateLatestVersion(); err != nil {
-					gl.Log("error", "Failed to update version: "+err.Error())
+					logz.Log("error", "Failed to update version: "+err.Error())
 				} else {
 					latestVersion, err := vrs.GetLatestVersion()
 					if err != nil {
-						gl.Log("error", "Failed to get latest version: "+err.Error())
+						logz.Log("error", "Failed to get latest version: "+err.Error())
 					} else {
-						gl.Log("info", "Current version: "+vrs.GetCurrentVersion())
-						gl.Log("info", "Latest version: "+latestVersion)
+						logz.Log("info", "Current version: "+vrs.GetCurrentVersion())
+						logz.Log("info", "Latest version: "+latestVersion)
 					}
 					vrs.setLastCheckedAt(time.Now())
 				}
@@ -348,7 +348,7 @@ func init() {
 			Short: "Get the current version of " + info.GetName(),
 			Long:  "Get the current version of " + info.GetName() + " from the manifest.",
 			Run: func(cmd *cobra.Command, args []string) {
-				gl.Log("info", "Current version: "+vrs.GetCurrentVersion())
+				logz.Log("info", "Current version: "+vrs.GetCurrentVersion())
 			},
 		}
 	}
@@ -358,9 +358,9 @@ func init() {
 			Short: "Restart the " + info.GetName() + " service",
 			Long:  "Restart the " + info.GetName() + " service to apply any changes made.",
 			Run: func(cmd *cobra.Command, args []string) {
-				gl.Log("info", "Restarting the service...")
+				logz.Log("info", "Restarting the service...")
 				// Logic to restart the service can be added here
-				gl.Log("success", "Service restarted successfully")
+				logz.Log("success", "Service restarted successfully")
 			},
 		}
 	}
@@ -370,7 +370,7 @@ func GetVersion() string {
 	if info == nil {
 		_, err := manifest.GetManifest()
 		if err != nil {
-			gl.Log("error", "Failed to get manifest: "+err.Error())
+			logz.Log("error", "Failed to get manifest: "+err.Error())
 			return "Unknown version"
 		}
 	}
@@ -383,13 +383,13 @@ func GetGitRepositoryModelURL() string {
 	return info.GetRepository()
 }
 func GetVersionInfo() string {
-	gl.Log("info", "Version: "+GetVersion())
-	gl.Log("info", "Git repository: "+GetGitRepositoryModelURL())
+	logz.Log("info", "Version: "+GetVersion())
+	logz.Log("info", "Git repository: "+GetGitRepositoryModelURL())
 	return fmt.Sprintf("Version: %s\nGit repository: %s", GetVersion(), GetGitRepositoryModelURL())
 }
 func GetLatestVersionFromGit() string {
 	if info.IsPrivate() {
-		gl.Log("error", "Cannot fetch latest version for private repositories.")
+		logz.Log("error", "Cannot fetch latest version for private repositories.")
 		return "Cannot fetch latest version for private repositories."
 	}
 
@@ -399,20 +399,20 @@ func GetLatestVersionFromGit() string {
 
 	gitURLWithoutGit := strings.TrimSuffix(GetGitRepositoryModelURL(), ".git")
 	if gitURLWithoutGit == "" {
-		gl.Log("error", "No repository URL set in the manifest.")
+		logz.Log("error", "No repository URL set in the manifest.")
 		return "No repository URL set in the manifest."
 	}
 
 	response, err := netClient.Get(gitURLWithoutGit + "/releases/latest")
 	if err != nil {
-		gl.Log("error", "Error fetching latest version: "+err.Error())
-		gl.Log("error", gitURLWithoutGit+"/releases/latest")
+		logz.Log("error", "Error fetching latest version: "+err.Error())
+		logz.Log("error", gitURLWithoutGit+"/releases/latest")
 		return err.Error()
 	}
 
 	if response.StatusCode != 200 {
-		gl.Log("error", "Error fetching latest version: "+response.Status)
-		gl.Log("error", "Url: "+gitURLWithoutGit+"/releases/latest")
+		logz.Log("error", "Error fetching latest version: "+response.Status)
+		logz.Log("error", "URL: "+gitURLWithoutGit+"/releases/latest")
 		body, _ := io.ReadAll(response.Body)
 		return fmt.Sprintf("Error: %s\nResponse: %s", response.Status, string(body))
 	}
@@ -423,22 +423,22 @@ func GetLatestVersionFromGit() string {
 }
 func GetLatestVersionInfo() string {
 	if info.IsPrivate() {
-		gl.Log("error", "Cannot fetch latest version for private repositories.")
+		logz.Log("error", "Cannot fetch latest version for private repositories.")
 		return "Cannot fetch latest version for private repositories."
 	}
-	gl.Log("info", "Latest version: "+GetLatestVersionFromGit())
+	logz.Log("info", "Latest version: "+GetLatestVersionFromGit())
 	return "Latest version: " + GetLatestVersionFromGit()
 }
 func GetVersionInfoWithLatestAndCheck() string {
 	if info.IsPrivate() {
-		gl.Log("error", "Cannot check version for private repositories.")
+		logz.Log("error", "Cannot check version for private repositories.")
 		return "Cannot check version for private repositories."
 	}
 	if GetVersion() == GetLatestVersionFromGit() {
-		gl.Log("info", "You are using the latest version.")
+		logz.Log("info", "You are using the latest version.")
 		return fmt.Sprintf("You are using the latest version.\n%s\n%s", GetVersionInfo(), GetLatestVersionInfo())
 	} else {
-		gl.Log("warn", "You are using an outdated version.")
+		logz.Log("warn", "You are using an outdated version.")
 		return fmt.Sprintf("You are using an outdated version.\n%s\n%s", GetVersionInfo(), GetLatestVersionInfo())
 	}
 }

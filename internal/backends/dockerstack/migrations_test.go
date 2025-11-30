@@ -7,8 +7,10 @@ import (
 	"github.com/kubex-ecosystem/gdbase/internal/bootstrap"
 )
 
+const triggerMigrationPath = "embedded/core/etapa_7_triggers.sql"
+
 func TestParseSQLHandlesDollarQuotedBlocks(t *testing.T) {
-	content, err := bootstrap.MigrationFiles.ReadFile("embedded/002_hardening.sql")
+	content, err := bootstrap.MigrationFiles.ReadFile(triggerMigrationPath)
 	if err != nil {
 		t.Fatalf("failed to read embedded migration file: %v", err)
 	}
@@ -20,10 +22,11 @@ func TestParseSQLHandlesDollarQuotedBlocks(t *testing.T) {
 		t.Fatalf("expected statements but got none")
 	}
 
-	// Ensure that at least one statement contains the DO $$ ... $$ block
+	// Ensure that at least one statement keeps the dollar-quoted function intact
 	found := false
 	for _, s := range stmts {
-		if strings.Contains(s.SQL, "DO $$") {
+		if strings.Contains(s.SQL, "CREATE OR REPLACE FUNCTION update_updated_at_column()") &&
+			strings.Count(s.SQL, "$$") >= 2 {
 			found = true
 			break
 		}
@@ -36,7 +39,7 @@ func TestParseSQLHandlesDollarQuotedBlocks(t *testing.T) {
 
 // Test helper to print parsed statements for debugging; run explicitly when needed.
 func TestParseSQL_PrintStatements(t *testing.T) {
-	content, err := bootstrap.MigrationFiles.ReadFile("embedded/002_hardening.sql")
+	content, err := bootstrap.MigrationFiles.ReadFile(triggerMigrationPath)
 	if err != nil {
 		t.Fatalf("failed to read embedded migration file: %v", err)
 	}

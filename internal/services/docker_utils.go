@@ -12,6 +12,7 @@ import (
 
 	ds "github.com/docker/docker/api/types/container"
 	cf "github.com/kubex-ecosystem/gdbase/internal/bootstrap"
+	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
 
 	"github.com/docker/docker/client"
 	nl "github.com/docker/docker/libnetwork/netlabel"
@@ -25,7 +26,7 @@ import (
 // database for working with almost any comercial scenario for products selling.
 
 var (
-	containersCache map[string]*Services
+	containersCache map[string]*ci.Services
 	initDBSQLFiles  embed.FS = cf.MigrationFiles
 )
 
@@ -35,7 +36,7 @@ var (
 type Services struct {
 	Name     string
 	Image    string
-	Env      []string
+	Env      map[string]string
 	Ports    []nat.PortMap
 	Volumes  map[string]struct{}
 	StateMap map[string]any

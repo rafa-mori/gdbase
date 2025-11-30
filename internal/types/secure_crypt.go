@@ -11,7 +11,7 @@ import (
 	"os"
 	"strings"
 
-	gl "github.com/kubex-ecosystem/logz"
+	logz "github.com/kubex-ecosystem/logz"
 )
 
 func EncryptEnv(value string, isConfidential bool) (string, error) {
@@ -79,12 +79,12 @@ func DecryptEnv(encryptedValue string, isConfidential bool) (string, error) {
 }
 func IsEncrypted(envFile string) bool {
 	if _, err := os.Stat(envFile); os.IsNotExist(err) {
-		gl.Log("error", fmt.Sprintf("Arquivo não encontrado: %v", err))
+		logz.Log("error", fmt.Sprintf("Arquivo não encontrado: %v", err))
 		return false
 	}
 	file, err := os.Open(envFile)
 	if err != nil {
-		gl.Log("error", fmt.Sprintf("Erro ao abrir o arquivo: %v", err))
+		logz.Log("error", fmt.Sprintf("Erro ao abrir o arquivo: %v", err))
 		return false
 	}
 	defer func(file *os.File) {
@@ -100,7 +100,7 @@ func IsEncrypted(envFile string) bool {
 	}
 
 	if err := scanner.Err(); err != nil {
-		gl.Log("error", fmt.Sprintf("Erro ao ler o arquivo: %v", err))
+		logz.Log("error", fmt.Sprintf("Erro ao ler o arquivo: %v", err))
 		return false
 	}
 

@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kubex-ecosystem/logz"
+	logz "github.com/kubex-ecosystem/logz"
 )
 
 // TelemetryIdentifier is a struct that holds the identifier for telemetry data

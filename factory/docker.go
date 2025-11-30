@@ -8,14 +8,15 @@ import (
 
 	"github.com/docker/docker/client"
 	dksk "github.com/kubex-ecosystem/gdbase/internal/backends/dockerstack"
-	dkrs "github.com/kubex-ecosystem/gdbase/internal/services"
+	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
+	dkrs "github.com/kubex-ecosystem/gdbase/internal/services/docker"
 	"github.com/kubex-ecosystem/logz"
 )
 
-type DockerSrv = dkrs.IDockerService
+type DockerSrv = ci.IDockerService
 
-func NewDockerService(config *dkrs.DBConfig, logger *logz.LoggerZ) (DockerSrv, error) {
-	return dkrs.NewDockerService(config, logger)
+func NewDockerService(logger *logz.LoggerZ) (DockerSrv, error) {
+	return dkrs.NewDockerService(logger)
 }
 
 type TunnelMode string
@@ -78,7 +79,11 @@ type SQLStatement = dksk.SQLStatement
 type StatementError = dksk.StatementError
 
 func NewDockerStackProvider() *DockerStackProvider {
-	return dksk.New()
+	dockerService, dockerServiceErr := dkrs.NewDockerService(nil)
+	if dockerServiceErr != nil {
+		return nil
+	}
+	return dksk.New(dockerService)
 }
 
 func NewMigrationManager(dsn string, logger *logz.LoggerZ) *MigrationManager {

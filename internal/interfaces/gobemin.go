@@ -4,7 +4,7 @@ package interfaces
 import (
 	"net/http"
 
-	"github.com/kubex-ecosystem/logz"
+	logz "github.com/kubex-ecosystem/logz"
 )
 
 type IGoBE interface {

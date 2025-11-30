@@ -7,7 +7,7 @@ import (
 	"syscall"
 
 	ci "github.com/kubex-ecosystem/gdbase/internal/interfaces"
-	"github.com/kubex-ecosystem/logz"
+	logz "github.com/kubex-ecosystem/logz"
 )
 
 type SignalManager[T chan string] struct {

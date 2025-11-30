@@ -4,7 +4,7 @@ import (
 	"reflect"
 
 	"github.com/google/uuid"
-	"github.com/kubex-ecosystem/logz"
+	logz "github.com/kubex-ecosystem/logz"
 )
 
 // IPropertyValBase is an interface that defines the methods for a property value.

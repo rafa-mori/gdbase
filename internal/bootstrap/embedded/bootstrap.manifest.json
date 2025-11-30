@@ -1,0 +1,273 @@
+{
+  "version": "3.0.0",
+  "generated_at": "2025-11-10T00:00:00Z",
+  "generated_by": "Rafael Mori (Desenvolvedor) + Claude Code (Anthropic)",
+  "database": {
+    "target": "PostgreSQL 17.6+",
+    "compatibility": ["PostgreSQL 14+", "PostgreSQL 15+", "PostgreSQL 16+", "PostgreSQL 17+"],
+    "required_extensions": ["uuid-ossp", "pgcrypto", "citext"]
+  },
+  "description": "Bootstrap do Schema Híbrido Canalize v3.0 - Combina melhor de sql_1 e sql_2",
+  "execution_modes": {
+    "fresh_install": "Instalação completa em banco vazio",
+    "idempotent": "Pode ser reexecutado sem efeitos colaterais",
+    "destructive": false
+  },
+  "execution_order": [
+    {
+      "step": 1,
+      "name": "Extensions + Multi-Tenancy",
+      "file": "core/etapa_1_extensions_tenancy.sql",
+      "description": "Cria extensions e estrutura de multi-tenancy (org, tenant, team)",
+      "estimated_duration_seconds": 2,
+      "dependencies": [],
+      "creates": [
+        "extension: uuid-ossp",
+        "extension: pgcrypto",
+        "extension: citext",
+        "table: org",
+        "table: tenant",
+        "table: team"
+      ],
+      "critical": true,
+      "rollback_safe": true
+    },
+    {
+      "step": 2,
+      "name": "Users + RBAC",
+      "file": "core/etapa_2_users_rbac.sql",
+      "description": "Cria usuários e sistema RBAC (roles, permissions, role_permission)",
+      "estimated_duration_seconds": 2,
+      "dependencies": ["etapa_1_extensions_tenancy.sql"],
+      "creates": [
+        "table: user",
+        "table: role",
+        "table: permission",
+        "table: role_permission"
+      ],
+      "critical": true,
+      "rollback_safe": true
+    },
+    {
+      "step": 3,
+      "name": "Memberships + FKs Circulares",
+      "file": "core/etapa_3_memberships.sql",
+      "description": "Cria memberships e adiciona foreign keys circulares",
+      "estimated_duration_seconds": 2,
+      "dependencies": ["etapa_2_users_rbac.sql"],
+      "creates": [
+        "table: tenant_membership",
+        "table: team_membership",
+        "constraint: team_created_by_fkey"
+      ],
+      "critical": true,
+      "rollback_safe": true
+    },
+    {
+      "step": 4,
+      "name": "Invites",
+      "file": "core/etapa_4_invites.sql",
+      "description": "Cria sistema de convites (partner_invitation, internal_invitation)",
+      "estimated_duration_seconds": 2,
+      "dependencies": ["etapa_3_memberships.sql"],
+      "creates": [
+        "table: partner_invitation",
+        "table: internal_invitation"
+      ],
+      "critical": false,
+      "rollback_safe": true
+    },
+    {
+      "step": 5,
+      "name": "Business Entities",
+      "file": "core/etapa_5_business_entities.sql",
+      "description": "Cria entidades de negócio (pipeline, partner, lead, commission, clawback)",
+      "estimated_duration_seconds": 3,
+      "dependencies": ["etapa_4_invites.sql"],
+      "creates": [
+        "table: pipeline",
+        "table: pipeline_stage",
+        "table: partner",
+        "table: partner_update",
+        "table: lead",
+        "table: commission",
+        "table: clawback"
+      ],
+      "critical": false,
+      "rollback_safe": true
+    },
+    {
+      "step": 6,
+      "name": "Índices de Performance",
+      "file": "core/etapa_6_indices.sql",
+      "description": "Cria todos os índices para otimização de queries",
+      "estimated_duration_seconds": 5,
+      "dependencies": ["etapa_5_business_entities.sql"],
+      "creates": [
+        "60 índices (simples, compostos, condicionais)"
+      ],
+      "critical": false,
+      "rollback_safe": true
+    },
+    {
+      "step": 7,
+      "name": "Triggers",
+      "file": "core/etapa_7_triggers.sql",
+      "description": "Cria função e triggers para auto-update de updated_at",
+      "estimated_duration_seconds": 2,
+      "dependencies": ["etapa_6_indices.sql"],
+      "creates": [
+        "function: update_updated_at_column()",
+        "13 triggers de updated_at"
+      ],
+      "critical": false,
+      "rollback_safe": true
+    },
+    {
+      "step": 8,
+      "name": "Seed Data",
+      "file": "core/etapa_8_seed_data.sql",
+      "description": "Insere dados iniciais (roles, permissions, exemplos)",
+      "estimated_duration_seconds": 3,
+      "dependencies": ["etapa_7_triggers.sql"],
+      "creates": [
+        "8 system roles",
+        "35 permissions",
+        "~100+ role-permission mappings",
+        "1 org de exemplo",
+        "1 tenant de exemplo",
+        "1 user admin (com password_hash)",
+        "1 pipeline com 5 stages"
+      ],
+      "critical": false,
+      "rollback_safe": true
+    },
+    {
+      "step": 9,
+      "name": "Auth Sessions",
+      "file": "core/etapa_9_auth_sessions.sql",
+      "description": "Cria tabela de sessões para refresh tokens nativos do BE",
+      "estimated_duration_seconds": 1,
+      "dependencies": ["etapa_2_users_rbac.sql"],
+      "creates": [
+        "table: auth_sessions",
+        "index: idx_auth_sessions_refresh"
+      ],
+      "critical": false,
+      "rollback_safe": true
+    }
+  ],
+  "total_estimated_duration_seconds": 22,
+  "statistics": {
+    "total_tables": 19,
+    "total_functions": 1,
+    "total_triggers": 13,
+    "total_indexes": 61,
+    "total_roles_created": 8,
+    "total_permissions_configured": 35
+  },
+  "validation": {
+    "pre_execution_checks": [
+      "Verificar conexão com banco de dados",
+      "Verificar permissões de criação de objetos",
+      "Verificar disponibilidade de extensions"
+    ],
+    "post_execution_checks": [
+      "Validar existência de todas as 18 tabelas",
+      "Validar existência de função update_updated_at_column",
+      "Validar existência de 13 triggers",
+      "Validar existência de 8 roles do sistema",
+      "Validar existência de 35 permissions",
+      "Validar integridade das Foreign Keys"
+    ]
+  },
+  "environment": {
+    "supported_environments": [
+      "development",
+      "staging",
+      "production"
+    ],
+    "required_privileges": [
+      "CREATE EXTENSION",
+      "CREATE TABLE",
+      "CREATE INDEX",
+      "CREATE FUNCTION",
+      "CREATE TRIGGER"
+    ]
+  },
+  "logging": {
+    "log_directory": "logs",
+    "log_format": "JSON",
+    "log_levels": ["INFO", "WARNING", "ERROR"],
+    "log_file_pattern": "bootstrap_YYYYMMDD_HHmmss.log"
+  },
+  "features": {
+    "multi_tenancy": {
+      "org_tenant_hierarchy": true,
+      "teams_within_tenant": true,
+      "saas_tiers": true,
+      "trial_support": true
+    },
+    "rbac": {
+      "hierarchical_roles": true,
+      "granular_permissions": true,
+      "permission_inheritance": true,
+      "system_roles": true
+    },
+    "invites": {
+      "partner_invites": true,
+      "internal_invites": true,
+      "expiration_support": true,
+      "status_tracking": true
+    },
+    "business": {
+      "pipelines": true,
+      "partners": true,
+      "leads": true,
+      "commissions": true,
+      "clawbacks": true
+    }
+  },
+  "improvements_over_sql1": [
+    "Adiciona estrutura org → tenant (mais clara)",
+    "Adiciona tiers SaaS (plan, is_trial, trial_ends_at)",
+    "Email case-insensitive (CITEXT)",
+    "Permissions normalizadas (FK real)",
+    "Role hierarchy (parent_role_id)",
+    "Pipelines e stages completos",
+    "Commissions e clawbacks"
+  ],
+  "improvements_over_sql2": [
+    "Mantém teams dentro de tenant",
+    "Adiciona logo_url no tenant",
+    "Adiciona is_system_role em roles",
+    "Sistema de invites completo",
+    "Adiciona value (allow/deny) em role_permission"
+  ],
+  "notes": [
+    "Scripts são idempotentes - podem ser reexecutados sem problemas",
+    "Todas as etapas possuem mensagens de progresso com emojis",
+    "Triggers de updated_at configurados para auditoria automática",
+    "Sistema RBAC completo com hierarquia de roles",
+    "Seed data inclui dados de exemplo para testes",
+    "Índices otimizados para queries frequentes",
+    "Suporta múltiplos frontends via multi-tenancy"
+  ],
+  "authors": [
+    {
+      "name": "Desenvolvedor",
+      "organization": "Canalize",
+      "role": "Technical Lead"
+    },
+    {
+      "name": "Claude Code",
+      "organization": "Anthropic",
+      "role": "Schema Architect"
+    }
+  ],
+  "license": "Proprietary - Canalize",
+  "support": {
+    "documentation": "README.md",
+    "issues": "Contactar equipe de desenvolvimento Canalize"
+  }
+}

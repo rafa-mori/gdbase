@@ -5,27 +5,35 @@ import (
 	"context"
 	"embed"
 	"errors"
+	"io/fs"
 	"os"
 	"sort"
 	"strings"
 	"time"
 
+	// "github.com/kubex-ecosystem/gdbase/internal/engine"
+
 	"github.com/kubex-ecosystem/gdbase/internal/provider"
+	"github.com/kubex-ecosystem/gdbase/internal/provider/flavors"
 )
 
-//go:embed all:embedded/*.sql
+//go:embed all:embedded
 var MigrationFiles embed.FS
+
+//go:embed all:services
+var ServiceFiles embed.FS
 
 type Config struct {
 	Backends      []string // ordem de preferência; e.g. ["dockerstack"] por enquanto
 	Strict        bool     // se true, não faz fallback silencioso
-	Services      []provider.ServiceRef
+	Services      []fs.DirEntry
+	ProvidersSvc  []provider.ServiceRef
 	PreferredPort map[string]int
 	Secrets       map[string]string
 }
 
 func FromEnv() Config {
-	raw := os.Getenv("GDBASE_BACKENDS")
+	raw := os.Getenv("CANALIZEDS_BACKENDS")
 	if raw == "" {
 		raw = "dockerstack"
 	}
@@ -33,7 +41,7 @@ func FromEnv() Config {
 	for i := range backends {
 		backends[i] = strings.TrimSpace(backends[i])
 	}
-	strict := strings.EqualFold(os.Getenv("GDBASE_STRICT"), "true")
+	strict := strings.EqualFold(os.Getenv("CANALIZEDS_STRICT"), "true")
 	return Config{
 		Backends: backends, Strict: strict,
 	}
@@ -48,7 +56,7 @@ func Start(ctx context.Context, cfg Config) (Result, error) {
 	// ordenar por prioridade “fixa” caso queira; hoje respeita ordem vinda
 	cands := make([]string, 0, len(cfg.Backends))
 	for _, b := range cfg.Backends {
-		if _, ok := provider.Get(b); ok {
+		if _, ok := flavors.Get(b); ok {
 			cands = append(cands, b)
 		}
 	}
@@ -60,12 +68,12 @@ func Start(ctx context.Context, cfg Config) (Result, error) {
 
 	var lastErr error
 	for _, name := range cands {
-		p, _ := provider.Get(name)
+		p, _ := flavors.Get(name)
 		spec := provider.StartSpec{
-			Services:      cfg.Services,
+			Services:      cfg.ProvidersSvc,
 			PreferredPort: cfg.PreferredPort,
 			Secrets:       cfg.Secrets,
-			Labels:        map[string]string{"owner": "gdbase"},
+			Labels:        map[string]string{"owner": "canalizedb"},
 		}
 		eps, err := p.Start(ctx, spec)
 		if err != nil {
@@ -93,4 +101,22 @@ func Start(ctx context.Context, cfg Config) (Result, error) {
 		return Result{Backend: name, Endpoints: eps}, nil
 	}
 	return Result{}, lastErr
+}
+
+func Stop(ctx context.Context, cfg Config, res Result) error {
+	p, ok := flavors.Get(res.Backend)
+	if !ok {
+		return errors.New("provider not found: " + res.Backend)
+	}
+	serviceRefs := make([]provider.ServiceRef, 0, len(cfg.ProvidersSvc))
+	serviceRefs = append(serviceRefs, cfg.ProvidersSvc...)
+	return p.Stop(ctx, serviceRefs)
+}
+
+func GetServices() ([]fs.DirEntry, error) {
+	entries, err := fs.ReadDir(ServiceFiles, "services")
+	if err != nil {
+		return nil, err
+	}
+	return entries, nil
 }

@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/kubex-ecosystem/logz"
+	logz "github.com/kubex-ecosystem/logz"
 )
 
 type IMutexes interface {

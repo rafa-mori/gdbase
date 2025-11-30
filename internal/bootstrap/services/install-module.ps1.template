@@ -1,0 +1,15 @@
+param($ModuleName, $BinaryPath, $ConfigPath)
+
+$serviceName = $ModuleName
+$wrapperFile = "C:\kubex\$ModuleName-wrapper.ps1"
+
+@"
+param(\$args)
+& "$BinaryPath" --config "$ConfigPath" @args
+"@ | Out-File $wrapperFile -Encoding utf8 -Force
+
+sc.exe create $serviceName binPath= "powershell -ExecutionPolicy Bypass -File $wrapperFile" start= auto
+sc.exe description $serviceName "Kubex Module: $ModuleName"
+sc.exe failure $serviceName reset=0 actions= restart/5000
+
+Write-Host "Kubex module $ModuleName instalado."
