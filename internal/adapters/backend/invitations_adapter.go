@@ -10,7 +10,7 @@ import (
 	// "github.com/kubex-ecosystem/gdbase/internal/models/invitations"
 	// Import BE interface (the contract)
 	// Note: In practice, this import path should match your actual module path
-	// beInvitations "github.com/kubex-prm/kubex_be/internal/adapters/database/invitations"
+	// beInvitations "github.com/kubex-ecosystem/kubex_be/internal/adapters/database/invitations"
 )
 
 // ===========================================================================

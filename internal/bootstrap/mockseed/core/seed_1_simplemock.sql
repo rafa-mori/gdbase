@@ -10,7 +10,7 @@ insert into orgs (
    name,
    created_at
 ) values ( '01JHX4ZCP3G2T4JC3P8VBA5N3A',
-           'Kubex PRM',
+           'Kubex Ecosystem',
            now() );
 
 -- ================

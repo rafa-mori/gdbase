@@ -6,7 +6,7 @@ package types
 // 	"os/signal"
 // 	"syscall"
 
-// 	ci "github.com/kubex-prm/kubex_be/interfaces"
+// 	ci "github.com/kubex-ecosystem/kubex_be/interfaces"
 // 	"github.com/kubex-ecosystem/logz"
 // 	gl "github.com/kubex-ecosystem/logz"
 // 	l "github.com/kubex-ecosystem/logz"
